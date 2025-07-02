@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "3190782392",
+    "project_id": "flawlessphotodiary",
+    "storage_bucket": "flawlessphotodiary.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3190782392:android:e720a625840c74132c374d",
+        "android_client_info": {
+          "package_name": "com.example.flawless"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATeJ7atmKEhvimweK3K2qPRA3K9JvR5ZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
