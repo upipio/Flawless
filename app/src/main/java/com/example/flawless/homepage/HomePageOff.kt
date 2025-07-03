@@ -45,6 +45,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.flawless.AppDestinations
 import com.example.flawless.R
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +58,6 @@ fun HomePageOff(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            // TopAppBar
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -112,18 +114,21 @@ fun HomePageOff(
             Divider(color = Color(0xff589591).copy(alpha = 0.5f), thickness = 3.dp)
         }
     ) { paddingValues ->
-        val months = listOf("June 2025", "May 2025", "April 2025", "Maret 2025", "Februari 2025")
-
+        // 1. Perubahan utama ada di sini
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues) // <-- paddingValues dari Scaffold diterapkan di sini
                 .background(Color.White)
         ) {
-            // Divider
             Divider(color = Color(0xff589591).copy(alpha = 0.5f), thickness = 3.dp)
 
-            LazyColumn {
+            // Menggunakan daftar bulan dinamis
+            val months = getMonthsList()
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize() // LazyColumn mengisi sisa ruang Column
+            ) {
                 items(months) { month ->
                     MonthItem(
                         month = month,
@@ -137,6 +142,20 @@ fun HomePageOff(
     }
 }
 
+// 2. Fungsi untuk membuat daftar bulan dinamis
+private fun getMonthsList(): List<String> {
+    val months = mutableListOf<String>()
+    val calendar = Calendar.getInstance() // Mendapatkan waktu saat ini
+    val sdf = SimpleDateFormat("MMMM yyyy", Locale.US) // Format: "July 2025"
+
+    // Membuat daftar 12 bulan ke belakang dari sekarang
+    repeat(12) {
+        months.add(sdf.format(calendar.time))
+        calendar.add(Calendar.MONTH, -1) // Mundur satu bulan
+    }
+    return months
+}
+
 @Composable
 fun MonthItem(month: String, onClick: () -> Unit) {
     Column(modifier = Modifier.clickable(onClick = onClick)) {
@@ -147,7 +166,7 @@ fun MonthItem(month: String, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.arrowtop), // Seharusnya panah kanan
+                painter = painterResource(id = R.drawable.arrowtop),
                 contentDescription = "Go to month",
                 modifier = Modifier.size(24.dp)
             )
