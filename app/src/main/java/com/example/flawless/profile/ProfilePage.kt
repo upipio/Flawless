@@ -48,7 +48,7 @@ fun Profile(modifier: Modifier = Modifier) {
                 .background(color = Color.White))
         Image(
             painter = painterResource(id = R.drawable.flawless),
-            contentDescription = "ChatGPT Image Jun 6, 2025, 09_22_39 PM",
+            contentDescription = "Flawless",
             modifier = Modifier
                 .requiredSize(size = 60.dp))
         Image(
@@ -122,16 +122,16 @@ fun Profile(modifier: Modifier = Modifier) {
                     y = 139.dp)
                 .requiredWidth(width = 272.dp))
         Image(
-            painter = painterResource(id = R.drawable.background),
+            painter = painterResource(id = R.drawable.gradasi),
             contentDescription = "Untitled design 1",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 0.dp,
-                    y = 63.dp)
-                .requiredWidth(width = 128.dp)
-                .requiredHeight(height = 413.dp)
-                .rotate(degrees = 90f))
+                    y = 60.dp)
+                .requiredWidth(width = 500.dp)
+                .requiredHeight(height = 150.dp)
+                .rotate(degrees = 0f))
         Image(
             painter = painterResource(id = R.drawable.mdi_heart),
             contentDescription = "mdi-heart",
@@ -280,7 +280,7 @@ fun Profile(modifier: Modifier = Modifier) {
                 .background(color = Color.White)
                 .shadow(elevation = 4.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.frame_upload),
             contentDescription = "Frame",
             modifier = Modifier
                 .fillMaxSize()
@@ -289,7 +289,7 @@ fun Profile(modifier: Modifier = Modifier) {
                     top = 859.dp,
                     bottom = 23.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.frame_home),
             contentDescription = "Frame",
             colorFilter = ColorFilter.tint(Color(0xff589591)),
             modifier = Modifier
