@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.flawless.R
 
 @Composable
-fun Create(modifier: Modifier = Modifier) {
+fun CreatePage(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .requiredWidth(width = 412.dp)
@@ -203,5 +203,5 @@ fun Create(modifier: Modifier = Modifier) {
 @Preview(widthDp = 412, heightDp = 917)
 @Composable
 private fun CreatePreview() {
-    Create(Modifier)
+    CreatePage(Modifier)
 }

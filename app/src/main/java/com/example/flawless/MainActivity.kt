@@ -1,5 +1,6 @@
 package com.example.flawless
 
+import HomePage1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,7 +16,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.flawless.homepage.CreatePage
 import com.example.flawless.homepage.HomePageOff
+import com.example.flawless.profile.ProfilePage
 import com.example.flawless.ui.theme.FlawlessTheme
 import com.example.flawless.welcomepage.FirstPage
 import com.example.flawless.welcomepage.LoginPage
@@ -45,7 +48,10 @@ object AppDestinations {
     const val WELCOME_PAGE = "welcome_page"
     const val SIGN_UP_PAGE = "sign_up_page" // Rute baru
     const val LOGIN_PAGE = "login_page"
-    const val HOME_PAGE = "home_page"
+    const val HOME_PAGE_OFF = "home_page_off"
+    const val HOME_PAGE_1 = "home_page_1"
+    const val CREATE_PAGE = "create_page"
+    const val PROFILE_PAGE = "profile_page"
 }
 
 @Composable
@@ -83,8 +89,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(AppDestinations.HOME_PAGE) {
-            HomePageOff(modifier = Modifier.fillMaxSize())
+        composable(AppDestinations.HOME_PAGE_OFF) {
+            HomePageOff(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
+        }
+        composable(AppDestinations.HOME_PAGE_1) {
+            // Gantilah dengan Composable Anda yang sebenarnya
+            HomePage1(navController = navController)
+        }
+        composable(AppDestinations.CREATE_PAGE) {
+            CreatePage(modifier = Modifier.fillMaxSize())
+        }
+        composable(AppDestinations.PROFILE_PAGE) {
+            ProfilePage(modifier = Modifier.fillMaxSize())
         }
     }
 }

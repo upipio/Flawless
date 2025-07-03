@@ -32,10 +32,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.flawless.R
 
 @Composable
-fun HomePage2(modifier: Modifier = Modifier) {
+fun HomePage1(modifier: Modifier = Modifier, navController: NavController) {
     Box(
         modifier = modifier
             .requiredWidth(width = 412.dp)
@@ -460,8 +462,8 @@ fun HomePage2(modifier: Modifier = Modifier) {
                 .background(color = Color.White)
                 .shadow(elevation = 4.dp))
         Image(
-            painter = painterResource(id = R.drawable.mdiaccountcircleoutline),
-            contentDescription = "mdi-account-circle-outline",
+            painter = painterResource(id = R.drawable.profile),
+            contentDescription = "profile",
             colorFilter = ColorFilter.tint(Color(0xff589591)),
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
@@ -470,7 +472,7 @@ fun HomePage2(modifier: Modifier = Modifier) {
                 .requiredSize(size = 35.dp))
         Image(
             painter = painterResource(id = R.drawable.frame_home),
-            contentDescription = "Frame",
+            contentDescription = "Frame Home",
             colorFilter = ColorFilter.tint(Color(0xff589591)),
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
@@ -480,7 +482,7 @@ fun HomePage2(modifier: Modifier = Modifier) {
                 .clip(shape = RoundedCornerShape(5.dp)))
         Image(
             painter = painterResource(id = R.drawable.frame_upload),
-            contentDescription = "Frame",
+            contentDescription = "Frame Upload",
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 198.dp,
@@ -492,6 +494,6 @@ fun HomePage2(modifier: Modifier = Modifier) {
 
 @Preview(widthDp = 412, heightDp = 917)
 @Composable
-private fun HomePage2Preview() {
-    HomePage2(Modifier)
+private fun HomePage1Preview() {
+    HomePage1(navController = rememberNavController())
 }

@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.flawless.R
 
 @Composable
-fun Profile(modifier: Modifier = Modifier) {
+fun ProfilePage(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .requiredWidth(width = 412.dp)
@@ -312,5 +312,5 @@ fun Profile(modifier: Modifier = Modifier) {
 @Preview(widthDp = 412, heightDp = 917)
 @Composable
 private fun ProfilePreview() {
-    Profile(Modifier)
+    ProfilePage(Modifier)
 }

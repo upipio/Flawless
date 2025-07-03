@@ -207,7 +207,7 @@ fun LoginPage(
                     onClick = {
                         // TODO: Tambahkan validasi login dengan data dari Firebase/server
                         // Untuk sekarang, kita langsung navigasi ke home
-                        navController.navigate(AppDestinations.HOME_PAGE) { //Ganti dengan homepage
+                        navController.navigate(AppDestinations.HOME_PAGE_OFF) {
                             // Menghapus semua halaman sebelumnya dari backstack
                             popUpTo(0) { inclusive = true }
                         }

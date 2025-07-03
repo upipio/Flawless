@@ -142,7 +142,7 @@ fun DetailPost1(modifier: Modifier = Modifier) {
                 .background(color = Color.White)
                 .shadow(elevation = 4.dp))
         Image(
-            painter = painterResource(id = R.drawable.mdiaccountcircleoutline),
+            painter = painterResource(id = R.drawable.profile),
             contentDescription = "mdi-account-circle-outline",
             colorFilter = ColorFilter.tint(Color(0xff589591)),
             modifier = Modifier
