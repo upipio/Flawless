@@ -90,9 +90,9 @@ fun WelcomePage(
         )
 
         // --- Create Account Button ---
-        // Kita akan menggabungkan Image dan Text dalam Box agar clickable bersamaan
+        // menggabungkan Image dan Text dalam Box agar clickable bersamaan
         Box(
-            contentAlignment = Alignment.Center, // Pusatkan Text di dalam Box ini
+            contentAlignment = Alignment.Center, // Pusat Text di dalam Box ini
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 80.dp, y = 647.dp)
@@ -107,7 +107,7 @@ fun WelcomePage(
                 .clickable { // JADIKAN CLICKABLE
                     navController.navigate(AppDestinations.SIGN_UP_PAGE) {
                         // Opsi: jika Anda ingin membersihkan WelcomePage dari backstack
-                        popUpTo(AppDestinations.WELCOME_PAGE) { inclusive = true }
+                        navController.navigate(AppDestinations.WELCOME_PAGE)
                         launchSingleTop = true
                     }
                 }
@@ -137,10 +137,10 @@ fun WelcomePage(
                     border = BorderStroke(2.dp, Color.White), // Border tetap
                     shape = RoundedCornerShape(50.dp)
                 )
-                .clickable { // JADIKAN CLICKABLE
+                .clickable { // CLICKABLE
                     navController.navigate(AppDestinations.LOGIN_PAGE) {
                         // Opsi: jika Anda ingin membersihkan WelcomePage dari backstack
-                        popUpTo(AppDestinations.WELCOME_PAGE) { inclusive = true }
+                        navController.navigate(AppDestinations.WELCOME_PAGE)
                         launchSingleTop = true
                     }
                 }
@@ -163,7 +163,7 @@ private fun WelcomePagePreview() {
     // jika WelcomePage tidak melakukan navigasi kompleks di preview itu sendiri.
     val navController = rememberNavController()
     // Pastikan tema juga diterapkan di preview untuk gaya yang konsisten
-    MaterialTheme { // Atau FlawlessTheme jika itu nama tema Anda
+    MaterialTheme { // FlawlessTheme
         WelcomePage(navController = navController, modifier = Modifier.fillMaxSize())
     }
 }

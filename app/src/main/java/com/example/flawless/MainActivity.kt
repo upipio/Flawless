@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.flawless.homepage.HomePageOff
 import com.example.flawless.ui.theme.FlawlessTheme
 import com.example.flawless.welcomepage.FirstPage
 import com.example.flawless.welcomepage.LoginPage
@@ -44,6 +45,7 @@ object AppDestinations {
     const val WELCOME_PAGE = "welcome_page"
     const val SIGN_UP_PAGE = "sign_up_page" // Rute baru
     const val LOGIN_PAGE = "login_page"
+    const val HOME_PAGE = "home_page"
 }
 
 @Composable
@@ -66,7 +68,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             // Assuming Login composable from PageLogin.kt can take a modifier
             WelcomePage(
                 modifier = Modifier.fillMaxSize(),
-                navController = TODO()
+                navController = navController
             )
         }
         composable(AppDestinations.SIGN_UP_PAGE) {
@@ -76,7 +78,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             // SignUpPage(modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.LOGIN_PAGE) {
-            LoginPage(modifier = Modifier.fillMaxSize())
+            LoginPage(
+                navController = navController,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable(AppDestinations.HOME_PAGE) {
+            HomePageOff(modifier = Modifier.fillMaxSize())
         }
     }
 }
@@ -132,7 +140,7 @@ fun WelcomePageScreenPreview() {
     FlawlessTheme {
         WelcomePage(
             modifier = Modifier.fillMaxSize(),
-            navController = TODO()
+            navController = rememberNavController()
         )
     }
 }

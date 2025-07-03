@@ -196,13 +196,13 @@ fun AddAccount(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .requiredSize(size = 35.dp)
-            ) {
+            ) /*{
                 Image(
                     painter = painterResource(id = R.drawable.mdi,
                     contentDescription = "Vector",
                     modifier = Modifier
                         .fillMaxSize())
-            }
+            }*/
         }
     }
 }

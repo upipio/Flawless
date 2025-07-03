@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -41,7 +40,7 @@ fun HomePageOff(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.flawless),
-            contentDescription = "ChatGPT Image Jun 6, 2025, 09_22_39 PM",
+            contentDescription = "Flawless",
             modifier = Modifier
                 .requiredSize(size = 60.dp))
         Text(
@@ -60,7 +59,7 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                 .offset(x = 65.dp,
                     y = 20.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.frame_calendar),
             contentDescription = "Frame",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
@@ -75,14 +74,13 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                     y = 64.dp)
                 .requiredWidth(width = 412.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.arrowtop),
             contentDescription = "Frame",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 12.dp,
                     y = 71.dp)
-                .requiredSize(size = 30.dp)
-                .rotate(degrees = -90f))
+                .requiredSize(size = 30.dp))
         Text(
             text = "June 2025",
             color = Color(0xff737373),
@@ -100,14 +98,13 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                 .requiredWidth(width = 412.dp)
                 .shadow(elevation = 2.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.arrowtop),
             contentDescription = "Frame",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 12.dp,
                     y = 133.dp)
-                .requiredSize(size = 30.dp)
-                .rotate(degrees = -90f))
+                .requiredSize(size = 30.dp))
         Text(
             text = "May 2025",
             color = Color(0xff737373),
@@ -125,14 +122,13 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                 .requiredWidth(width = 412.dp)
                 .shadow(elevation = 2.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.arrowtop),
             contentDescription = "Frame",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 12.dp,
                     y = 191.dp)
-                .requiredSize(size = 30.dp)
-                .rotate(degrees = -90f))
+                .requiredSize(size = 30.dp))
         Text(
             text = "April 2025",
             color = Color(0xff737373),
@@ -150,14 +146,13 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                 .requiredWidth(width = 412.dp)
                 .shadow(elevation = 2.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.arrowtop),
             contentDescription = "Frame",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 12.dp,
                     y = 250.dp)
-                .requiredSize(size = 30.dp)
-                .rotate(degrees = -90f))
+                .requiredSize(size = 30.dp))
         Text(
             text = "Maret 2025",
             color = Color(0xff737373),
@@ -175,14 +170,13 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                 .requiredWidth(width = 412.dp)
                 .shadow(elevation = 2.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.arrowtop),
             contentDescription = "Frame",
             modifier = Modifier
                 .align(alignment = Alignment.TopStart)
                 .offset(x = 12.dp,
                     y = 307.dp)
-                .requiredSize(size = 30.dp)
-                .rotate(degrees = -90f))
+                .requiredSize(size = 30.dp))
         Text(
             text = "Februari 2025",
             color = Color(0xff737373),
@@ -210,7 +204,7 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                     y = 859.dp)
                 .requiredSize(size = 35.dp))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.frame_home),
             contentDescription = "Frame",
             colorFilter = ColorFilter.tint(Color(0xff589591)),
             modifier = Modifier
@@ -220,7 +214,7 @@ fun HomePageOff(modifier: Modifier = Modifier) {
                 .requiredSize(size = 35.dp)
                 .clip(shape = RoundedCornerShape(5.dp)))
         Image(
-            painter = painterResource(id = R.drawable.frame_eye),
+            painter = painterResource(id = R.drawable.frame_upload),
             contentDescription = "Frame",
             modifier = Modifier
                 .fillMaxSize()

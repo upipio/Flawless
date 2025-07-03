@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.material.icons.extended)
     implementation("androidx.compose.ui:ui:...")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
@@ -54,7 +55,7 @@ dependencies {
     // Glide (untuk memuat gambar dari URL Firebase Storage)
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.androidx.media3.effect)
-    implementation(libs.androidx.navigation.compose.jvmstubs)// PASTIKAN VERSI TERBARU!
+    implementation(libs.androidx.navigation.compose)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
