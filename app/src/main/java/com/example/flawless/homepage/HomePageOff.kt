@@ -111,17 +111,16 @@ fun HomePageOff(
                     }
                 }
             }
-            Divider(color = Color(0xff589591).copy(alpha = 0.5f), thickness = 3.dp)
+            Divider(color = Color(0xff589591).copy(alpha = 0.5f), thickness = 2.dp)
         }
     ) { paddingValues ->
-        // 1. Perubahan utama ada di sini
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // <-- paddingValues dari Scaffold diterapkan di sini
+                .padding(paddingValues) //
                 .background(Color.White)
         ) {
-            Divider(color = Color(0xff589591).copy(alpha = 0.5f), thickness = 3.dp)
+            Divider(color = Color(0xff4F4F4F).copy(alpha = 0.5f), thickness = 2.dp)
 
             // Menggunakan daftar bulan dinamis
             val months = getMonthsList()
@@ -142,7 +141,7 @@ fun HomePageOff(
     }
 }
 
-// 2. Fungsi untuk membuat daftar bulan dinamis
+// untuk membuat daftar bulan dinamis
 private fun getMonthsList(): List<String> {
     val months = mutableListOf<String>()
     val calendar = Calendar.getInstance() // Mendapatkan waktu saat ini

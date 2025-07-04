@@ -1,179 +1,184 @@
 package com.example.flawless.homepage
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.flawless.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DetailPost1(modifier: Modifier = Modifier) {
-    Box(
+fun DetailPost(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    // Kita gunakan data pertama dari album pertama sebagai contoh
+    // Nanti ini akan diganti dengan data yang dilempar dari halaman sebelumnya
+    val album = remember { generateFixedHomePageData().first { it.posts.isNotEmpty() } }
+    val pagerState = rememberPagerState(pageCount = { album.posts.size })
+
+
+    // 1. Menggunakan Column sebagai dasar, bukan Scaffold dengan TopAppBar
+    Column(
         modifier = modifier
-            .requiredWidth(width = 412.dp)
-            .requiredHeight(height = 917.dp)
-            .background(color = Color.White)
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState()) // Membuat seluruh halaman bisa di-scroll
     ) {
-        Text(
-            text = "Back",
-            color = Color(0xfffa9a97),
-            style = TextStyle(
-                fontSize = 22.sp),
+        // --- KITA BUAT HEADER KITA SENDIRI DI SINI ---
+
+        // 2. Tombol Back di paling atas
+        Row(
             modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 52.dp,
-                    y = 20.dp))
-        Image(
-            painter = painterResource(id = R.drawable.frame_eye),
-            contentDescription = "Frame",
+                .fillMaxWidth()
+                .padding(start = 4.dp, top = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+            Text("Back", style = MaterialTheme.typography.titleMedium, color = Color(0xFFFA9A97))
+        }
+        Divider(color = Color.LightGray.copy(alpha = 0.5f), thickness = 2.dp)
+        //Spacer(modifier = Modifier.height(8.dp))
+
+        // 3. Baris Judul dan Menu Titik Tiga
+        Row(
             modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 17.dp,
-                    y = 21.dp)
-                .requiredSize(size = 24.dp))
-        Divider(
-            color = Color(0xff4f4f4f),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp), //start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween // Mendorong judul ke kiri & menu ke kanan
+        ) {
+            val currentPost = album.posts[pagerState.currentPage]
+            val title = currentPost.description.split(" ").take(5).joinToString(" ")
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),// Membuat teks fleksibel
+                color = Color.Black
+            )
+
+            var menuExpanded by remember { mutableStateOf(false) }
+            Box {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.three_dot_vertical),
+                        contentDescription = "More options",
+                        // 2. Icon size and color changed
+                        modifier = Modifier.size(18.dp),
+                        tint = Color.Black
+                    )
+                }
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false }
+                ) {
+                    DropdownMenuItem(text = { Text("Edit") }, onClick = { menuExpanded = false })
+                    DropdownMenuItem(text = { Text("Delete") }, onClick = { menuExpanded = false })
+                    DropdownMenuItem(text = { Text("Favorite") }, onClick = { menuExpanded = false })
+                }
+            }
+        }
+
+        // --- KONTEN UTAMA (SLIDER, DESKRIPSI, DLL) ---
+
+        // Slider Foto Full-size
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 0.dp,
-                    y = 65.dp)
-                .requiredWidth(width = 412.dp))
-        Image(
-            painter = painterResource(id = R.drawable.mdidotsvertical),
-            contentDescription = "mdi-dots-vertical",
-            colorFilter = ColorFilter.tint(Color(0xff4f4f4f)),
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 380.dp,
-                    y = 76.dp)
-                .requiredSize(size = 20.dp))
-        Text(
-            text = "Pertama kali jadi panitia Kurban",
-            color = Color(0xff263238),
-            style = TextStyle(
-                fontSize = 16.sp),
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 17.dp,
-                    y = 76.dp))
-        Image(
-            painter = painterResource(id = R.drawable.kurban),
-            contentDescription = "Kurban idul adha 2",
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 0.dp,
-                    y = 106.dp)
-                .requiredWidth(width = 412.dp)
-                .requiredHeight(height = 550.dp))
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 206.dp,
-                    y = 664.dp)
-                .requiredSize(size = 5.dp)
-                .clip(shape = CircleShape)
-                .background(color = Color(0xffffa7a7)))
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 215.dp,
-                    y = 664.dp)
-                .requiredSize(size = 5.dp)
-                .clip(shape = CircleShape)
-                .background(color = Color(0xff84bdb9)))
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 224.dp,
-                    y = 664.dp)
-                .requiredSize(size = 5.dp)
-                .clip(shape = CircleShape)
-                .background(color = Color(0xff84bdb9)))
-        Text(
-            text = "Pengalaman pertama jadi panitia kurban di hari raya Idul Adha di tahun 2025. Alhamdulillah di kasih kesempatan buat jadi panitia kurban, senang rasanya bisa membantu di hari besar seperti ini ditambah dapet daging tambahan karna jadi panitia wkwkwk.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            color = Color(0xff4f4f4f),
-            style = TextStyle(
-                fontSize = 12.sp),
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 12.dp,
-                    y = 691.dp)
-                .requiredWidth(width = 385.dp)
-                .requiredHeight(height = 105.dp))
-        Text(
-            text = "6 June 2025",
-            color = Color(0xff828282),
-            style = TextStyle(
-                fontSize = 11.sp),
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 12.dp,
-                    y = 807.dp)
-                .requiredWidth(width = 144.dp)
-                .requiredHeight(height = 19.dp))
-        Box(
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = (-52).dp,
-                    y = 837.dp)
-                .requiredWidth(width = 535.dp)
-                .requiredHeight(height = 80.dp)
-                .background(color = Color.White)
-                .shadow(elevation = 4.dp))
-        Image(
-            painter = painterResource(id = R.drawable.profile),
-            contentDescription = "mdi-account-circle-outline",
-            colorFilter = ColorFilter.tint(Color(0xff589591)),
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 342.dp,
-                    y = 859.dp)
-                .requiredSize(size = 35.dp))
-        Image(
-            painter = painterResource(id = R.drawable.frame_eye),
-            contentDescription = "Frame",
-            colorFilter = ColorFilter.tint(Color(0xff589591)),
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart)
-                .offset(x = 47.dp,
-                    y = 859.dp)
-                .requiredSize(size = 35.dp)
-                .clip(shape = RoundedCornerShape(5.dp)))
-        Image(
-            painter = painterResource(id = R.drawable.frame_eye),
-            contentDescription = "Frame",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 198.dp,
-                    end = 179.dp,
-                    top = 859.dp,
-                    bottom = 23.dp))
+                .fillMaxWidth()
+                .aspectRatio(1f)
+        ) { pageIndex ->
+            Image(
+                painter = painterResource(id = album.posts[pageIndex].imageUrl),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        // Indikator Titik Bulat
+        Row(
+            Modifier
+                .height(30.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) Color(0xFFFA9A97) else Color(0xff589591)
+                Box(modifier = Modifier.padding(4.dp).clip(CircleShape).background(color).size(8.dp))
+            }
+        }
+
+        // Deskripsi dan Tanggal
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp)) {
+            val currentPost = album.posts[pagerState.currentPage]
+            val formattedDate = SimpleDateFormat("dd MMMM yyyy", Locale.US).format(currentPost.postDate)
+
+            Text(
+                text = currentPost.description,
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Posted on: $formattedDate",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
     }
 }
 
-@Preview(widthDp = 412, heightDp = 917)
+@Preview(showBackground = true)
 @Composable
-private fun DetailPost1Preview() {
-    DetailPost1(Modifier)
+fun DetailPostPreview() {
+    DetailPost(navController = rememberNavController())
 }

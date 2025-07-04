@@ -57,6 +57,6 @@ fun CardDiaryPreview() {
     CardDiary(
         text = "Pengalaman pertama jadi panitia kurban, seru banget!",
         date = "28-06-2025",
-        imageModel = R.drawable.sapi // URL gambar acak
+        imageModel = R.drawable.gambar_sapi_place_holder // URL gambar acak
     )
 }

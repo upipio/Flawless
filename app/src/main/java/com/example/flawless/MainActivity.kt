@@ -1,6 +1,5 @@
 package com.example.flawless
 
-import HomePage1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.flawless.homepage.CreatePage
+import com.example.flawless.homepage.DetailPost
+import com.example.flawless.homepage.HomePage1
 import com.example.flawless.homepage.HomePageOff
 import com.example.flawless.profile.ProfilePage
 import com.example.flawless.ui.theme.FlawlessTheme
@@ -52,6 +53,7 @@ object AppDestinations {
     const val HOME_PAGE_1 = "home_page_1"
     const val CREATE_PAGE = "create_page"
     const val PROFILE_PAGE = "profile_page"
+    const val DETAIL_POST_PAGE = "detail_post_page"
 }
 
 @Composable
@@ -103,6 +105,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
         composable(AppDestinations.PROFILE_PAGE) {
             ProfilePage(modifier = Modifier.fillMaxSize())
+        }
+        composable(AppDestinations.DETAIL_POST_PAGE) {
+            DetailPost(navController = navController)
         }
     }
 }
