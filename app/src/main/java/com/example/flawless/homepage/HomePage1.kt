@@ -136,7 +136,7 @@ fun HomePage1(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(Color.White),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            //contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             itemsIndexed(albums) { index, album ->
                 // Tampilkan item HANYA jika ada postingan di bulan itu

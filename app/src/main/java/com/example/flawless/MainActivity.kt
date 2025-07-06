@@ -19,7 +19,10 @@ import com.example.flawless.homepage.CreatePage
 import com.example.flawless.homepage.DetailPost
 import com.example.flawless.homepage.HomePage1
 import com.example.flawless.homepage.HomePageOff
+import com.example.flawless.profile.AddAccount
 import com.example.flawless.profile.ProfilePage
+import com.example.flawless.profile.ProfileSetting
+import com.example.flawless.profile.Security
 import com.example.flawless.ui.theme.FlawlessTheme
 import com.example.flawless.welcomepage.FirstPage
 import com.example.flawless.welcomepage.LoginPage
@@ -54,6 +57,9 @@ object AppDestinations {
     const val CREATE_PAGE = "create_page"
     const val PROFILE_PAGE = "profile_page"
     const val DETAIL_POST_PAGE = "detail_post_page"
+    const val PROFILE_SETTINGS_PAGE = "profile_settings_page"
+    const val SECURITY_PAGE = "security_page"
+    const val ADD_ACCOUNT_PAGE = "add_account_page"
 }
 
 @Composable
@@ -101,13 +107,26 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             HomePage1(navController = navController)
         }
         composable(AppDestinations.CREATE_PAGE) {
-            CreatePage(modifier = Modifier.fillMaxSize())
+            CreatePage(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.PROFILE_PAGE) {
-            ProfilePage(modifier = Modifier.fillMaxSize())
+            ProfilePage(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.DETAIL_POST_PAGE) {
             DetailPost(navController = navController)
+        }
+        composable(AppDestinations.PROFILE_SETTINGS_PAGE) {
+            ProfileSetting(modifier = Modifier.fillMaxSize())
+        }
+        composable(AppDestinations.SECURITY_PAGE) {
+            Security(modifier = Modifier.fillMaxSize())
+        }
+        composable(AppDestinations.ADD_ACCOUNT_PAGE) {
+            AddAccount(modifier = Modifier.fillMaxSize())
         }
     }
 }
