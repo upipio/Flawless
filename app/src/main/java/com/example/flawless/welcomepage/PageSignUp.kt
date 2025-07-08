@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.flawless.AppDestinations
 import com.example.flawless.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -199,7 +200,10 @@ fun SignUpPage(
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Button(
-                    onClick = { /* TODO: Logika Get Started */ },
+                    onClick = {
+                        navController.navigate(AppDestinations.WELCOME_PAGE) {
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
