@@ -13,13 +13,15 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -86,32 +88,31 @@ fun ProfilePage(
         Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(painter = painterResource(id = R.drawable.flawless), contentDescription = "Logo", modifier = Modifier.size(40.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color(0xff84bdb9), fontWeight = FontWeight.Bold)) { append("Photo ") }
-                                withStyle(style = SpanStyle(color = Color(0xfffa9a97), fontWeight = FontWeight.Bold)) { append("Diary") }
-                            },
-                            fontSize = 20.sp
+                // 1. Divider untuk TopBar
+                Column {
+                    TopAppBar(
+                        title = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(painter = painterResource(id = R.drawable.flawless), contentDescription = "Logo", modifier = Modifier.size(40.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = buildAnnotatedString {
+                                        withStyle(style = SpanStyle(color = Color(0xff84bdb9), fontWeight = FontWeight.Bold)) { append("Photo ") }
+                                        withStyle(style = SpanStyle(color = Color(0xfffa9a97), fontWeight = FontWeight.Bold)) { append("Diary") }
+                                    },
+                                    fontSize = 20.sp
                                 )
                             }
                         },
-                    actions = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                // Cek dulu apakah menu tertutup, jika ya, buka.
-                                if (drawerState.isClosed) drawerState.open()
+                        actions = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Default.Settings, contentDescription = "Settings")
                             }
-                        }) {
-                            Icon(Icons.Default.Settings, contentDescription = "Settings")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-                )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                    )
+                    Divider(color = Color.Gray.copy(alpha = 0.3f)) // Divider di bawah TopAppBar
+                }
             },
             bottomBar = {
                 // BottomAppBar dibungkus Column untuk efek shadow/pembatas
@@ -128,7 +129,7 @@ fun ProfilePage(
                             horizontalArrangement = Arrangement.SpaceAround,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = { /* Anda sudah di sini */ }) {
+                            IconButton(onClick = { navController.navigate(AppDestinations.HOME_PAGE_1) }) {
                                 Icon(Icons.Default.Home, contentDescription = "Home", modifier = Modifier.size(30.dp), tint = Color(0xff589591))
                             }
                             IconButton(onClick = { navController.navigate(AppDestinations.CREATE_PAGE) }) {
@@ -142,48 +143,64 @@ fun ProfilePage(
                 }
             }
         ) { paddingValues ->
-            // 2. Menggunakan Box untuk menumpuk Header dan Grid Foto
-            Box(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color.White)
+                    .background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val favoritePosts = remember {
-                    generateFixedHomePageData().flatMap { it.posts }.shuffled()
+                // Item pertama: Header Profil
+                item {
+                    ProfileHeader()
                 }
 
-                // Grid Foto dimulai dari paling atas
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(top = 220.dp, start = 1.dp, end = 1.dp, bottom = 1.dp), // Beri padding atas setinggi header + sedikit space
-                    horizontalArrangement = Arrangement.spacedBy(1.dp),
-                    verticalArrangement = Arrangement.spacedBy(1.dp)
-                ) {
-                    items(favoritePosts) { post ->
-                        Image(
-                            painter = painterResource(id = post.imageUrl),
-                            contentDescription = "Favorite post",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.aspectRatio(1f)
-                        )
-                    }
-                }
+                // Item kedua: Divider di bawah Header
+                /*item {
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                }*/
 
-                // 3. Header Profil dengan bentuk melengkung & Ikon Hati
-                // Header diletakkan di atas LazyGrid
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    ProfileHeader()// Header diletakkan di sini, akan menimpa grid
+                // Item ketiga: Ikon Hati
+                item {
                     Icon(
                         painter = painterResource(id = R.drawable.mdi_heart),
                         contentDescription = "Favorite section",
                         tint = Color(0xffffa7a7),
-                        modifier = Modifier.padding(top = 8.dp).size(30.dp)
+                        /*modifier = Modifier.size(30.dp)*/
+                                modifier = Modifier
+                                .padding(vertical = 12.dp)
+                            .size(30.dp)
                     )
+                }
+
+                // Item keempat: Divider di bawah ikon hati
+                /*item {
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                }*/
+
+                // Item kelima: Grid Foto
+                item {
+                    val favoritePosts = remember {
+                        generateFixedHomePageData().flatMap { it.posts }.shuffled()
+                    }
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .heightIn(max = 1000.dp) // Beri tinggi maksimal
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                        contentPadding = PaddingValues(2.dp)
+                    ) {
+                        items(favoritePosts) { post ->
+                            Image(
+                                painter = painterResource(id = post.imageUrl),
+                                contentDescription = "Favorite post",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.aspectRatio(1f)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -199,7 +216,8 @@ fun ProfileHeader() {
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
-            .clip(RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp)) // <-- KUNCI: Membuat sudut melengkung
+            /*.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+            .clip(RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp))*/ // Membuat sudut melengkung
             .background(gradient)
     ) {
         Row(
@@ -211,12 +229,15 @@ fun ProfileHeader() {
             Image(
                 painter = painterResource(id = R.drawable.mdi_account_circle),
                 contentDescription = "Profile Picture",
-                modifier = Modifier.size(80.dp)
+                /*modifier = Modifier.size(80.dp)*/
+                        modifier = Modifier
+                        .size(90.dp)
+                    .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(verticalArrangement = Arrangement.Center) {
-                Text("FULLNAME", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                Text("Posts: 1055", color = Color.White, style = MaterialTheme.typography.bodyMedium)
+                Text("FULL NAME", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+                Text("Posts: 0", color = Color.White, style = MaterialTheme.typography.bodyMedium) // ganti sesuai jumlah post dan namanya
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     "New Memories, New Life. Preserving amazing moments forever!!!",
@@ -230,9 +251,11 @@ fun ProfileHeader() {
 }
 
 // Composable terpisah untuk konten menu settings
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsDrawerContent(navController: NavController,
                           drawerState: DrawerState) {
+    val scope = rememberCoroutineScope()
     ModalDrawerSheet(
         modifier = Modifier.width(250.dp) // Lebar menu
     ) {
@@ -249,21 +272,26 @@ fun SettingsDrawerContent(navController: NavController,
             }
             // Daftar Menu
             SettingMenuItem(text = "Profile Setting") {
+                scope.launch { drawerState.close() }
                 navController.navigate(AppDestinations.PROFILE_SETTINGS_PAGE)
             }
             SettingMenuItem(text = "Security") {
+                scope.launch { drawerState.close() }
                 navController.navigate(AppDestinations.SECURITY_PAGE)
             }
             SettingMenuItem(text = "Add Account") {
+                scope.launch { drawerState.close() }
                 navController.navigate(AppDestinations.ADD_ACCOUNT_PAGE)
             }
             SettingMenuItem(text = "Account") {
+                scope.launch { drawerState.close() }
                 navController.navigate(AppDestinations.WELCOME_PAGE)
             }
         }
         Spacer(modifier = Modifier.weight(1f)) // Pendorong ke bawah
         // Tombol Logout di paling bawah
         SettingMenuItem(text = "Logout") {
+            scope.launch { drawerState.close() }
             navController.navigate(AppDestinations.WELCOME_PAGE) {
                 popUpTo(0) { inclusive = true } // Hapus semua riwayat
             }
@@ -281,12 +309,12 @@ fun SettingMenuItem(text: String, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
                 .padding(16.dp),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black // 2. Warna teks diubah menjadi hitam
         )
         Divider(color = Color.Gray.copy(alpha = 0.2f))
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

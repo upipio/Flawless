@@ -19,10 +19,10 @@ import com.example.flawless.homepage.CreatePage
 import com.example.flawless.homepage.DetailPost
 import com.example.flawless.homepage.HomePage1
 import com.example.flawless.homepage.HomePageOff
-import com.example.flawless.profile.AddAccount
+import com.example.flawless.profile.ProfileAddAccount
 import com.example.flawless.profile.ProfilePage
+import com.example.flawless.profile.ProfileSecurity
 import com.example.flawless.profile.ProfileSetting
-import com.example.flawless.profile.Security
 import com.example.flawless.ui.theme.FlawlessTheme
 import com.example.flawless.welcomepage.FirstPage
 import com.example.flawless.welcomepage.LoginPage
@@ -117,16 +117,24 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.DETAIL_POST_PAGE) {
-            DetailPost(navController = navController)
+            DetailPost(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.PROFILE_SETTINGS_PAGE) {
-            ProfileSetting(modifier = Modifier.fillMaxSize())
+            ProfileSetting(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.SECURITY_PAGE) {
-            Security(modifier = Modifier.fillMaxSize())
+            ProfileSecurity(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
         }
         composable(AppDestinations.ADD_ACCOUNT_PAGE) {
-            AddAccount(modifier = Modifier.fillMaxSize())
+            ProfileAddAccount(
+                navController = navController,
+                modifier = Modifier.fillMaxSize())
         }
     }
 }
