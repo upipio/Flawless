@@ -1,15 +1,20 @@
 package com.example.flawless.homepage
 
-
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,20 +22,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,12 +41,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,45 +53,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.flawless.R
+import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    storageViewModel: StorageViewModel = viewModel()
 ) {
-    var title by remember { mutableStateOf("Wizard news in New York!!!") }
-    var description by remember { mutableStateOf("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nibh arcu, dapibus in blandit id, euismod et nunc.") }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    // State untuk daftar gambar yang dipilih (MutableList agar bisa diubah)
-    val selectedImages = remember {
-        mutableStateListOf(R.drawable.foto_cewe_1, R.drawable.foto_cewe_2)
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            selectedImageUris = uris
+        }
     }
 
-    // State untuk mengontrol dialog/popup
-    var showImageDialog by remember { mutableStateOf(false) }
-    var imageIndexToChange by remember { mutableStateOf<Int?>(null) }
-
-    // Daftar semua gambar yang bisa dipilih dari drawable
-    val availableImages = remember {
-        listOf(
-            R.drawable.foto_cewe_1, R.drawable.foto_cewe_2, R.drawable.gambar_kurban_place_holder,
-            R.drawable.gambar_sapi_place_holder, R.drawable.gambar_cewe_dan_kucing_place_holder,
-            R.drawable.gambar_punggung_place_holder, R.drawable.sleeping, R.drawable.ontwitter1
-        )
-    }
-
-    // Latar belakang
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = Color.White, // latar belakang putih
+        containerColor = Color.White,
         topBar = {
             Column(modifier = Modifier.background(Color.White)) {
                 CenterAlignedTopAppBar(
@@ -114,17 +108,10 @@ fun CreatePage(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            PhotoUploader(
-                selectedImages = selectedImages,
+            PhotoPickerSection(
+                selectedImageUris = selectedImageUris,
                 onAddClick = {
-                    // Logika untuk menambah foto baru ke list
-                    imageIndexToChange = null // Mode tambah, bukan ganti
-                    showImageDialog = true
-                },
-                onImageClick = { index ->
-                    // Logika untuk mengganti foto yang ada
-                    imageIndexToChange = index
-                    showImageDialog = true
+                    imagePickerLauncher.launch("image/*")
                 }
             )
 
@@ -147,53 +134,51 @@ fun CreatePage(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Tombol Cancel dan Save
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
                     onClick = { navController.popBackStack() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF828282)) // Warna abu-abu
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF828282))
                 ) {
                     Text("Cancel")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
-                    onClick = { /* TODO: Logika Save */ navController.popBackStack() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xff589591))
+                    onClick = {
+                        if (selectedImageUris.isEmpty() || title.isBlank() || description.isBlank()) {
+                            Toast.makeText(context, "Please add photos and fill all fields", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        isLoading = true
+                        storageViewModel.uploadImage(context, selectedImageUris.first()) { success, imageUrl, message ->
+                            isLoading = false
+                            if (success) {
+                                Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            } else {
+                                Toast.makeText(context, "Upload failed: $message", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                    enabled = !isLoading
                 ) {
-                    Text("Save")
+                    if (isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                    } else {
+                        Text("Save")
+                    }
                 }
             }
         }
     }
-
-    // Logika Dialog/Popup Pemilihan Gambar
-    if (showImageDialog) {
-        ImagePickerDialog(
-            availableImages = availableImages,
-            onDismiss = { showImageDialog = false },
-            onImageSelected = { newImageRes ->
-                imageIndexToChange?.let { index ->
-                    // Mode ganti: Ganti gambar di indeks yang dipilih
-                    selectedImages[index] = newImageRes
-                } ?: run {
-                    // Mode tambah: Tambah gambar baru ke akhir list
-                    selectedImages.add(newImageRes)
-                }
-                showImageDialog = false
-            }
-        )
-    }
 }
 
-// Composable terpisah untuk Photo Uploader
 @Composable
-private fun PhotoUploader(
-    selectedImages: List<Int>,
-    onAddClick: () -> Unit,
-    onImageClick: (Int) -> Unit
+private fun PhotoPickerSection(
+    selectedImageUris: List<Uri>,
+    onAddClick: () -> Unit
 ) {
     Column {
         Text(
@@ -203,74 +188,48 @@ private fun PhotoUploader(
             color = Color(0xff589591),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.Gray.copy(alpha = 0.1f))
+                .clickable(onClick = onAddClick),
+            contentAlignment = Alignment.Center
         ) {
-            itemsIndexed(selectedImages) { index, imageResId ->
-                Image(
-                    painter = painterResource(id = imageResId),
-                    contentDescription = "Selected image ${index + 1}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(width = 150.dp, height = 200.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onImageClick(index) }
-                )
-            }
-            item {
-                // Tombol "Tambah"
-                Box(
-                    modifier = Modifier
-                        .size(width = 150.dp, height = 200.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Gray.copy(alpha = 0.1f))
-                        .clickable(onClick = onAddClick),
-                    contentAlignment = Alignment.Center
+            if (selectedImageUris.isEmpty()) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Default.AddPhotoAlternate,
+                        contentDescription = "Add Photo",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Text("Tap to select photos", color = Color.Gray)
+                }
+            } else {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Default.AddPhotoAlternate, contentDescription = "Add More Photos", tint = Color.Gray, modifier = Modifier.size(48.dp))
+                    items(selectedImageUris) { uri ->
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentDescription = "Selected image",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .aspectRatio(3f / 4f)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-// Composable terpisah untuk Dialog/Popup
-@Composable
-private fun ImagePickerDialog(
-    availableImages: List<Int>,
-    onDismiss: () -> Unit,
-    onImageSelected: (Int) -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Choose an Image") },
-        text = {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 100.dp), // Grid yang adaptif
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(availableImages) { imageRes ->
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = "Selectable Image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onImageSelected(imageRes) }
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Close")
-            }
-        }
-    )
-}
+// Hapus fungsi PhotoUploader dan ImagePickerDialog yang duplikat
 
 @Composable
 private fun CustomTextField(
@@ -279,7 +238,7 @@ private fun CustomTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) { // sedikit padding vertikal
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
         Text(
             text = label,
             style = MaterialTheme.typography.titleMedium,

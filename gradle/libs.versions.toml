@@ -12,6 +12,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseStorage = "21.0.2"
 media3Effect = "1.7.1"
 navigationCompose = "2.9.0"
+navigationRuntimeAndroid = "2.9.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage", v
 androidx-media3-effect = { group = "androidx.media3", name = "media3-effect", version.ref = "media3Effect" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.6.7" }
+androidx-navigation-runtime-android = { group = "androidx.navigation", name = "navigation-runtime-android", version.ref = "navigationRuntimeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

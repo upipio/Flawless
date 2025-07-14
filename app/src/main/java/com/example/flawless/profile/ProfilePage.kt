@@ -253,13 +253,18 @@ fun ProfileHeader() {
 // Composable terpisah untuk konten menu settings
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsDrawerContent(navController: NavController,
-                          drawerState: DrawerState) {
+fun SettingsDrawerContent(
+    navController: NavController,
+    drawerState: DrawerState
+) {
     val scope = rememberCoroutineScope()
+    // 1. Atur warna container LANGSUNG di ModalDrawerSheet
     ModalDrawerSheet(
-        modifier = Modifier.width(250.dp) // Lebar menu
+        modifier = Modifier.width(250.dp),
+        drawerContainerColor = Color.White, // <-- Kunci #1: Memastikan seluruh container putih
+        drawerContentColor = Color.Black    // <-- Kunci #2: Menjadikan hitam sebagai warna default konten
     ) {
-        Column(modifier = Modifier.background(Color.White)) {
+        Column(modifier = Modifier.fillMaxSize()) {
             // Header "Settings"
             Box(
                 modifier = Modifier
@@ -270,30 +275,35 @@ fun SettingsDrawerContent(navController: NavController,
             ) {
                 Text("Settings", color = Color.White, style = MaterialTheme.typography.titleLarge)
             }
-            // Daftar Menu
-            SettingMenuItem(text = "Profile Setting") {
-                scope.launch { drawerState.close() }
-                navController.navigate(AppDestinations.PROFILE_SETTINGS_PAGE)
+
+            // Column untuk item menu, tidak perlu background lagi
+            Column {
+                SettingMenuItem(text = "Profile Setting") {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(AppDestinations.PROFILE_SETTINGS_PAGE)
+                }
+                SettingMenuItem(text = "Security") {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(AppDestinations.SECURITY_PAGE)
+                }
+                SettingMenuItem(text = "Add Account") {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(AppDestinations.ADD_ACCOUNT_PAGE)
+                }
+                SettingMenuItem(text = "Account") {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(AppDestinations.WELCOME_PAGE)
+                }
             }
-            SettingMenuItem(text = "Security") {
+
+            // Spacer mendorong Logout ke bawah
+            Spacer(modifier = Modifier.weight(1f))
+
+            SettingMenuItem(text = "Logout") {
                 scope.launch { drawerState.close() }
-                navController.navigate(AppDestinations.SECURITY_PAGE)
-            }
-            SettingMenuItem(text = "Add Account") {
-                scope.launch { drawerState.close() }
-                navController.navigate(AppDestinations.ADD_ACCOUNT_PAGE)
-            }
-            SettingMenuItem(text = "Account") {
-                scope.launch { drawerState.close() }
-                navController.navigate(AppDestinations.WELCOME_PAGE)
-            }
-        }
-        Spacer(modifier = Modifier.weight(1f)) // Pendorong ke bawah
-        // Tombol Logout di paling bawah
-        SettingMenuItem(text = "Logout") {
-            scope.launch { drawerState.close() }
-            navController.navigate(AppDestinations.WELCOME_PAGE) {
-                popUpTo(0) { inclusive = true } // Hapus semua riwayat
+                navController.navigate(AppDestinations.WELCOME_PAGE) {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         }
     }
@@ -310,7 +320,7 @@ fun SettingMenuItem(text: String, onClick: () -> Unit) {
                 .clickable(onClick = onClick)
                 .padding(16.dp),
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Blue // 2. Warna teks diubah menjadi hitam
+            color = Color.Red // 2. teks diubah menjadi merah
         )
         Divider(color = Color.Gray.copy(alpha = 0.2f))
     }

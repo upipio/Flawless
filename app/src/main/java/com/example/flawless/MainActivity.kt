@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -82,7 +83,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(AppDestinations.SIGN_UP_PAGE) {
             SignUpPage(
                 navController = navController,
-                modifier = Modifier.fillMaxSize())
+                modifier = Modifier.fillMaxSize(),
+                authViewModel = viewModel()
+            )
         }
         composable(AppDestinations.LOGIN_PAGE) {
             LoginPage(

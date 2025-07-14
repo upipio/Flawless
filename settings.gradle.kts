@@ -1,10 +1,14 @@
 pluginManagement {
     repositories {
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
-        // TAMBAHKAN BARIS INI
-        maven("https://s01.oss.sonatype.org/content/repositories/releases/")
     }
 }
 dependencyResolutionManagement {
@@ -12,8 +16,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // DAN TAMBAHKAN BARIS INI JUGA
-        maven("https://s01.oss.sonatype.org/content/repositories/releases/")
     }
 }
 
