@@ -54,22 +54,22 @@ fun DetailPost(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    // Kita gunakan data pertama dari album pertama sebagai contoh
+    // menggunakan data pertama dari album pertama sebagai contoh
     // Nanti ini akan diganti dengan data yang dilempar dari halaman sebelumnya
     val album = remember { generateFixedHomePageData().first { it.posts.isNotEmpty() } }
     val pagerState = rememberPagerState(pageCount = { album.posts.size })
 
 
-    // 1. Menggunakan Column sebagai dasar, bukan Scaffold dengan TopAppBar
+    // Menggunakan Column sebagai dasar dengan TopAppBar
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
             .verticalScroll(rememberScrollState()) // Membuat seluruh halaman bisa di-scroll
     ) {
-        // --- KITA BUAT HEADER KITA SENDIRI DI SINI ---
+        // HEADER
 
-        // 2. Tombol Back di paling atas
+        // Tombol Back di paling atas
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,7 +84,7 @@ fun DetailPost(
         Divider(color = Color.LightGray.copy(alpha = 0.5f), thickness = 2.dp)
         //Spacer(modifier = Modifier.height(8.dp))
 
-        // 3. Baris Judul dan Menu Titik Tiga
+        // Baris Judul dan Menu Titik Tiga
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -110,7 +110,6 @@ fun DetailPost(
                     Icon(
                         painter = painterResource(id = R.drawable.three_dot_vertical),
                         contentDescription = "More options",
-                        // 2. Icon size and color changed
                         modifier = Modifier.size(18.dp),
                         tint = Color.Black
                     )
@@ -126,7 +125,7 @@ fun DetailPost(
             }
         }
 
-        // --- KONTEN UTAMA (SLIDER, DESKRIPSI, DLL) ---
+        // KONTEN UTAMA (SLIDER, DESKRIPSI, DLL)
 
         // Slider Foto Full-size
         HorizontalPager(

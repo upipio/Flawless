@@ -88,10 +88,10 @@ fun CreatePage(
         )
     }
 
-    // 1. Latar belakang putih penuh & struktur yang benar
+    // Latar belakang
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = Color.White, // <-- Memastikan seluruh latar belakang putih
+        containerColor = Color.White, // latar belakang putih
         topBar = {
             Column(modifier = Modifier.background(Color.White)) {
                 CenterAlignedTopAppBar(
@@ -147,7 +147,7 @@ fun CreatePage(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 2. Tombol Cancel dan Save dipindahkan ke sini
+            // Tombol Cancel dan Save
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -169,7 +169,7 @@ fun CreatePage(
         }
     }
 
-    // 3. Logika Dialog/Popup Pemilihan Gambar
+    // Logika Dialog/Popup Pemilihan Gambar
     if (showImageDialog) {
         ImagePickerDialog(
             availableImages = availableImages,
@@ -279,7 +279,7 @@ private fun CustomTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) { // Tambahkan sedikit padding vertikal
+    Column(modifier = Modifier.padding(vertical = 4.dp)) { // sedikit padding vertikal
         Text(
             text = label,
             style = MaterialTheme.typography.titleMedium,

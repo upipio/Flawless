@@ -70,7 +70,7 @@ fun HomePage1(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    // 1. Menggunakan data yang dinamis
+    // Menggunakan data yang dinamis
     val albums = remember { generateFixedHomePageData() }
 
     Scaffold(
@@ -98,18 +98,18 @@ fun HomePage1(
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
                 )
-                // Divider sekarang ditempatkan di sini, di dalam Column TopAppBar
+                // Divider di Column TopAppBar
                 Divider(color = Color(0xff4F4F4F).copy(alpha = 0.5f), thickness = 2.dp)
             }
         },
         bottomBar = {
             // BottomAppBar dibungkus Column untuk efek shadow/pembatas
             Column {
-                // Ini akan memberi efek garis bayangan di atas BottomAppBar
+                // memberi efek garis bayangan di atas BottomAppBar
                 Divider(thickness = 2.dp, color = Color(0xff589591).copy(alpha = 0.6f))
                 BottomAppBar(
                     containerColor = Color.White,
-                    // Shadow bisa ditambahkan di sini jika diinginkan
+                    // Shadow bisa ditambahkan di sini
                     // modifier = Modifier.shadow(elevation = 8.dp)
                 ) {
                     Row(
@@ -139,7 +139,7 @@ fun HomePage1(
             //contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             itemsIndexed(albums) { index, album ->
-                // Tampilkan item HANYA jika ada postingan di bulan itu
+                // Tampilkan item yang hanya ada postingan di bulan itu
                 if (album.posts.isNotEmpty()) {
                     MonthlyAlbumItem(album = album, navController = navController)
                     // Beri pemisah jika bukan item terakhir yang punya postingan
@@ -193,7 +193,7 @@ fun MonthlyAlbumItem(album: MonthlyAlbum, navController: NavController) {
     }
 }
 
-// Composable BARU untuk bulan yang KOSONG
+// Composable baru untuk bulan yang kosong
 @Composable
 fun EmptyMonthItem(month: String) {
     Column(modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp)) {
@@ -233,7 +233,6 @@ fun PostCard(post: DiaryPost, navController: NavController) {
                     .fillMaxWidth()
                     .aspectRatio(1f) // Diubah menjadi rasio 1:1 agar lebih rapi
             )
-            // 3. Perbaikan Teks dan Menu agar tidak tumpang tindih
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

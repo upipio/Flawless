@@ -20,7 +20,7 @@ data class MonthlyAlbum(
     val posts: List<DiaryPost>
 )
 
-// --- FUNGSI DATA YANG SUDAH DIPERBAIKI TOTAL ---
+// Fungsi data
 fun generateFixedHomePageData(): List<MonthlyAlbum> {
     val albums = mutableListOf<MonthlyAlbum>()
     val calendar = Calendar.getInstance()
@@ -48,7 +48,7 @@ fun generateFixedHomePageData(): List<MonthlyAlbum> {
         when (monthName) {
             "July 2025" -> albums.add(MonthlyAlbum(month = monthName, posts = julyPosts))
             "June 2025" -> albums.add(MonthlyAlbum(month = monthName, posts = junePosts))
-            else -> albums.add(MonthlyAlbum(month = monthName, posts = emptyList())) // Bulan lainnya KOSONG
+            else -> albums.add(MonthlyAlbum(month = monthName, posts = emptyList())) // Bulan lainnya kosong
         }
         calendar.add(Calendar.MONTH, -1)
     }

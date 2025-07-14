@@ -72,16 +72,16 @@ fun SignUpPage(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // 1. Background Image diperbaiki agar memenuhi layar
+        // Background Image memenuhi layar
         Image(
             painter = painterResource(id = R.drawable.background),
             contentDescription = "Background",
-            contentScale = ContentScale.Crop, // <-- Ini akan memastikan gambar memenuhi layar
+            contentScale = ContentScale.Crop, // memastikan gambar memenuhi layar
             modifier = Modifier.fillMaxSize()
             .rotate(degrees = 180f)
         )
 
-        // 2. Tombol Back standar dan fungsional
+        // Tombol Back
         Row(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -106,7 +106,7 @@ fun SignUpPage(
             )
         }
 
-        // 3. Card Putih di bagian bawah
+        // Card Putih di bagian bawah
         Card(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -115,11 +115,11 @@ fun SignUpPage(
             shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            // 4. Column dibuat bisa di-scroll
+            // Column dibuat bisa di-scroll
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()) // <-- Kunci agar tidak terpotong
+                    .verticalScroll(rememberScrollState()) // Kunci agar tidak terpotong
                     .padding(horizontal = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -143,7 +143,7 @@ fun SignUpPage(
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                // --- Form Input ---
+                // Form Input
                 OutlinedTextField(
                     value = fullname,
                     onValueChange = { fullname = it },

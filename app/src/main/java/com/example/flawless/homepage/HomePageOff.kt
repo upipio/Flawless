@@ -77,7 +77,7 @@ fun HomePageOff(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Tombol kalender */ }) {
+                    IconButton(onClick = { navController.navigate(AppDestinations.HOME_PAGE_OFF)}) {
                         Icon(
                             painter = painterResource(id = R.drawable.frame_calendar),
                             contentDescription = "Calendar View",

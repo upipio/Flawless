@@ -310,7 +310,7 @@ fun SettingMenuItem(text: String, onClick: () -> Unit) {
                 .clickable(onClick = onClick)
                 .padding(16.dp),
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black // 2. Warna teks diubah menjadi hitam
+            color = Color.Blue // 2. Warna teks diubah menjadi hitam
         )
         Divider(color = Color.Gray.copy(alpha = 0.2f))
     }

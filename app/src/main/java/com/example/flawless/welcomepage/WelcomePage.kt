@@ -37,7 +37,7 @@ fun WelcomePage(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize() // 1. Menggunakan fillMaxSize agar responsif
+        modifier = modifier.fillMaxSize() // Menggunakan fillMaxSize agar responsif
     ) {
         Image(
             painter = painterResource(id = R.drawable.background),
@@ -46,14 +46,14 @@ fun WelcomePage(
             contentScale = ContentScale.Crop
         )
 
-        // 2. Menggunakan Column untuk menata semua elemen secara vertikal
+        // Column untuk menata semua elemen secara vertikal
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp, vertical = 64.dp), // Padding untuk seluruh layar
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // --- Bagian Header ---
+            // Bagian Header
             Text(
                 text = "Welcome to Photo Diary!",
                 color = Color.White,
@@ -69,10 +69,10 @@ fun WelcomePage(
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            // --- Spacer untuk mendorong konten ke tengah dan bawah ---
+            // Spacer untuk mendorong konten ke tengah dan bawah
             Spacer(modifier = Modifier.weight(1f))
 
-            // --- Ilustrasi ---
+            // Ilustrasi
             Image(
                 painter = painterResource(id = R.drawable.photos_bro),
                 contentDescription = "Illustration of Photos",
@@ -83,17 +83,16 @@ fun WelcomePage(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // --- Bagian Tombol ---
+            // Bagian Tombol
             Button(
                 onClick = {
-                    // 3. Navigasi yang Benar
                     navController.navigate(AppDestinations.SIGN_UP_PAGE)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(50.dp),
-                // Mengambil warna dari tema, jika tidak ada, gunakan default
+                // Mengambil warna dari tema, gunakan default
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
@@ -106,7 +105,6 @@ fun WelcomePage(
 
             OutlinedButton(
                 onClick = {
-                    // 3. Navigasi yang Benar
                     navController.navigate(AppDestinations.LOGIN_PAGE)
                 },
                 modifier = Modifier

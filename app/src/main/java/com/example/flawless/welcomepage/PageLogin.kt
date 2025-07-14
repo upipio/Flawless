@@ -62,10 +62,10 @@ import com.example.flawless.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(
-    navController: NavController, // 1. NavController
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    // 2. State untuk menyimpan input dan status UI
+    // State untuk menyimpan input dan status UI
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -81,7 +81,7 @@ fun LoginPage(
             modifier = Modifier.fillMaxSize()
         )
 
-        // 3. Tombol Back
+        // Tombol Back
         Row(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -135,7 +135,7 @@ fun LoginPage(
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                // 4. Form Input
+                // Form Input
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -175,7 +175,7 @@ fun LoginPage(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 5. Checkbox dan Forgot Password
+                // Checkbox dan Forgot Password
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -202,11 +202,10 @@ fun LoginPage(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 6. Tombol Login Fungsional
+                // Tombol Login Fungsional
                 Button(
                     onClick = {
                         // TODO: Tambahkan validasi login dengan data dari Firebase/server
-                        // Untuk sekarang, kita langsung navigasi ke home
                         navController.navigate(AppDestinations.HOME_PAGE_OFF) {
                             // Menghapus semua halaman sebelumnya dari backstack
                             popUpTo(0) { inclusive = true }
@@ -235,7 +234,7 @@ fun LoginPage(
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                // 7. Tombol Social Media
+                // Tombol Social Media
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -265,6 +264,5 @@ fun LoginPage(
 @Preview(showBackground = true)
 @Composable
 private fun LoginPreview() {
-    // butuh NavController untuk preview, gunakan rememberNavController()
     LoginPage(navController = rememberNavController())
 }
