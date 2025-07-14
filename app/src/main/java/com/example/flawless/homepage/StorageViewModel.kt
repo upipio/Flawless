@@ -4,47 +4,45 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flawless.core.SupabaseClient
+import com.example.flawless.core.storage
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
 
 class StorageViewModel : ViewModel() {
 
-    private val storage = SupabaseClient.storageService
-
-    // Fungsi untuk mengunggah gambar
     fun uploadImage(
         context: Context,
         imageUri: Uri,
-        bucketName: String = "post-images",
+        bucketName: String = "post-images", // Pastikan bucket 'post-images' ada di Supabase
         onComplete: (success: Boolean, imageUrl: String?, message: String?) -> Unit
     ) {
         viewModelScope.launch {
             try {
+                // 1. Dapatkan byte dari URI menggunakan ContentResolver
                 val inputStream = context.contentResolver.openInputStream(imageUri)
                 val bytes = inputStream?.readBytes()
                 inputStream?.close()
 
                 if (bytes == null) {
-                    onComplete(false, null, "Gagal membaca file.")
+                    onComplete(false, null, "Gagal membaca file dari URI.")
                     return@launch
                 }
 
+                // 2. Buat nama file yang unik
                 val fileName = "${UUID.randomUUID()}.jpg"
-                val requestBody = bytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
 
-                val response = SupabaseClient.storageService.uploadFile(bucketName, fileName, requestBody)
+                // 3. Unggah file menggunakan library Supabase
+                storage.from(bucketName).upload(path = fileName, data = bytes, upsert = true)
 
-                if (response.isSuccessful) {
-                    val publicUrl = "${SupabaseClient.SUPABASE_PUBLIC_URL}/$bucketName/$fileName"
-                    onComplete(true, publicUrl, "Berhasil upload")
-                } else {
-                    onComplete(false, null, "Gagal upload: ${response.code()}")
-                }
+                // 4. Dapatkan URL publik dari gambar yang diunggah
+                val publicUrl = storage.from(bucketName).publicUrl(path = fileName)
+
+                onComplete(true, publicUrl, "Berhasil mengunggah gambar.")
+
             } catch (e: Exception) {
-                onComplete(false, null, e.message ?: "Error tidak diketahui")
+                // Tangani error dengan lebih baik
+                e.printStackTrace()
+                onComplete(false, null, e.message ?: "Terjadi error yang tidak diketahui.")
             }
         }
     }

@@ -97,14 +97,14 @@ fun ProfileSetting(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .clickable { /* TODO: Logika ganti foto */ }
+                    .clickable { /*  Logika ganti foto */ }
             )
             Text(
                 text = "+ Edit Photo Profile",
                 color = Color(0xff84bdb9),
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .clickable { /* TODO: Logika ganti foto */ }
+                    .clickable { /*  Logika ganti foto */ }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -148,7 +148,7 @@ fun ProfileSetting(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
-                    onClick = { /* TODO: Logika Save */ navController.popBackStack() },
+                    onClick = { /* Logika Save */ navController.popBackStack() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xff589591))
                 ) {
                     Text("Save")
