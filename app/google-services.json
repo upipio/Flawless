@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "3190782392",
-    "project_id": "flawlessphotodiary",
-    "storage_bucket": "flawlessphotodiary.firebasestorage.app"
+    "project_number": "794107566849",
+    "project_id": "flawless-photo-diary-real",
+    "storage_bucket": "flawless-photo-diary-real.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:3190782392:android:e720a625840c74132c374d",
+        "mobilesdk_app_id": "1:794107566849:android:c63302a6d57f9df6591900",
         "android_client_info": {
           "package_name": "com.example.flawless"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "794107566849-dg84lufmke7feg1o261tj63h9iig1rfr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flawless",
+            "certificate_hash": "c6d5a0dd405a998d14fd9aeea8f45389199c0c2c"
+          }
+        },
+        {
+          "client_id": "794107566849-60lkmgup1ds6e4eg2l3egds55rm5fbg0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyATeJ7atmKEhvimweK3K2qPRA3K9JvR5ZA"
+          "current_key": "AIzaSyCVYH8cNfZv94Pn5a1FWOUIElsEiXg7vDI"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "794107566849-60lkmgup1ds6e4eg2l3egds55rm5fbg0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

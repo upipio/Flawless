@@ -37,16 +37,29 @@ android {
     }
     buildFeatures {
         compose = true
-        viewBinding = true
+        viewBinding = false
     }
 }
 
 dependencies {
+    // Compose & ViewModel
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
+    implementation("io.supabase.kt:gotrue-kt:2.4.1")      // Untuk auth jika diperlukan
+    implementation("io.supabase.kt:postgrest-kt:2.4.1")   // Untuk database jika diperlukan
+    implementation("io.supabase.kt:storage-kt:2.4.1")     // untuk upload gambar
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+
+    implementation("io.ktor:ktor-client-android:2.3.11")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("com.google.firebase:firebase-auth")
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.compose.ui:ui:...")
     implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
     // Firebase Cloud Firestore
     implementation("com.google.firebase:firebase-firestore-ktx")

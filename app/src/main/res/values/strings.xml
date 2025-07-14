@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Flawless</string>
+
+    <string name="default_web_client_id" translatable="false">794107566849-60lkmgup1ds6e4eg2l3egds55rm5fbg0.apps.googleusercontent.com</string>
+
 </resources>
