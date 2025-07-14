@@ -6,45 +6,45 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flawless.core.SupabaseClient
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
 
 class StorageViewModel : ViewModel() {
 
-    private val storage = SupabaseClient.storage
+    private val storage = SupabaseClient.storageService
 
     // Fungsi untuk mengunggah gambar
     fun uploadImage(
         context: Context,
         imageUri: Uri,
-        bucketName: String = "post-images", // Nama bucket yang Anda buat
+        bucketName: String = "post-images",
         onComplete: (success: Boolean, imageUrl: String?, message: String?) -> Unit
     ) {
         viewModelScope.launch {
             try {
-                // Baca data gambar dari URI
-                val contentResolver = context.contentResolver
-                val inputStream = contentResolver.openInputStream(imageUri)
+                val inputStream = context.contentResolver.openInputStream(imageUri)
                 val bytes = inputStream?.readBytes()
                 inputStream?.close()
 
                 if (bytes == null) {
-                    onComplete(false, null, "Failed to read image file.")
+                    onComplete(false, null, "Gagal membaca file.")
                     return@launch
                 }
 
-                // Buat nama file yang unik menggunakan UUID
-                val fileName = "${UUID.randomUUID()}"
+                val fileName = "${UUID.randomUUID()}.jpg"
+                val requestBody = bytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
 
-                // Unggah byte gambar ke Supabase Storage
-                storage.from(bucketName).upload(fileName, bytes)
+                val response = SupabaseClient.storageService.uploadFile(bucketName, fileName, requestBody)
 
-                // Dapatkan URL publik dari gambar yang baru diunggah
-                val publicUrl = storage.from(bucketName).publicUrl(fileName)
-
-                onComplete(true, publicUrl, "Upload successful!")
-
+                if (response.isSuccessful) {
+                    val publicUrl = "${SupabaseClient.SUPABASE_PUBLIC_URL}/$bucketName/$fileName"
+                    onComplete(true, publicUrl, "Berhasil upload")
+                } else {
+                    onComplete(false, null, "Gagal upload: ${response.code()}")
+                }
             } catch (e: Exception) {
-                onComplete(false, null, e.message)
+                onComplete(false, null, e.message ?: "Error tidak diketahui")
             }
         }
     }

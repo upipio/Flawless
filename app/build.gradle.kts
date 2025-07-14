@@ -43,7 +43,12 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
     // Supabase (Untuk Storage)
+    // Uncomment these lines to enable Supabase functionality
     val supabaseVersion = "2.5.0" // Versi Supabase terbaru yang stabil
     implementation("io.supabase.kt:storage-kt:$supabaseVersion")
     implementation("io.supabase.kt:gotrue-kt:$supabaseVersion")
@@ -51,7 +56,7 @@ dependencies {
     implementation("io.supabase.kt:realtime-kt:$supabaseVersion")
 
     // Google Sign-In (if needed, ensure it's compatible or managed separately)
-    // implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.2.0") // Uncomment this line if you intend to use Google Sign-In
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
