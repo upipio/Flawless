@@ -43,20 +43,16 @@ android {
 }
 
 dependencies {
-    /*implementation("com.example:my-library:1.0.0")*/
     // Supabase (Untuk Storage)
-
-    /*val ktorVersion = "2.3.12" // Versi Ktor yang stabil
-    implementation("io.ktor:ktor-client-android:$ktorVersion")*/
-
-    /*val supabaseVersion = "2.5.0" // Versi Supabase terbaru yang stabil
+    val supabaseVersion = "2.5.0" // Versi Supabase terbaru yang stabil
     implementation("io.supabase.kt:storage-kt:$supabaseVersion")
     implementation("io.supabase.kt:gotrue-kt:$supabaseVersion")
     implementation("io.supabase.kt:postgrest-kt:$supabaseVersion")
     implementation("io.supabase.kt:realtime-kt:$supabaseVersion")
 
-    // Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:21.2.0")*/
+    // Google Sign-In (if needed, ensure it's compatible or managed separately)
+    // implementation("com.google.android.gms:play-services-auth:21.2.0")
+
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     // DEPENDENSI WAJIB UNTUK FIREBASE AUTH

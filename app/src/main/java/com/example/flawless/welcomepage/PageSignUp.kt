@@ -3,7 +3,18 @@ package com.example.flawless.welcomepage
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -11,9 +22,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +67,7 @@ import com.example.flawless.R
 fun SignUpPage(
     navController: NavController,
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel() // Sekarang ini akan dikenali
 ) {
     var fullname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -49,7 +76,7 @@ fun SignUpPage(
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    // KODE UI ANDA TIDAK SAYA UBAH SAMA SEKALI
+    // KODE UI ANDA SAMA PERSIS, TIDAK ADA PERUBAHAN
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -163,8 +190,6 @@ fun SignUpPage(
                     )
                 )
                 Spacer(modifier = Modifier.height(30.dp))
-
-                // Tombol "Get Started" dengan Logika Firebase
                 Button(
                     onClick = {
                         if (fullname.isBlank() || email.isBlank() || password.isBlank()) {
@@ -172,7 +197,8 @@ fun SignUpPage(
                             return@Button
                         }
                         isLoading = true
-                        authViewModel.createUser(email, password) { success, message ->
+                        // 3. Kirim 'fullname' ke ViewModel
+                        authViewModel.createUser(email, password, fullname) { success, message ->
                             isLoading = false
                             if (success) {
                                 Toast.makeText(context, "Registration successful!", Toast.LENGTH_SHORT).show()
@@ -195,7 +221,6 @@ fun SignUpPage(
                         Text("Get Started", color = Color.White, fontSize = 16.sp)
                     }
                 }
-
                 Spacer(modifier = Modifier.height(35.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     HorizontalDivider(color = Color(0xfffa9a97), modifier = Modifier.weight(1f))
@@ -211,7 +236,7 @@ fun SignUpPage(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    IconButton(onClick = { /* Dibiarkan kosong untuk sementara */ }) {
+                    IconButton(onClick = { /* Dibiarkan kosong */ }) {
                         Image(
                             painter = painterResource(id = R.drawable.google),
                             contentDescription = "Sign up with Google",
@@ -219,7 +244,7 @@ fun SignUpPage(
                         )
                     }
                     Spacer(modifier = Modifier.width(20.dp))
-                    IconButton(onClick = { /* Dibiarkan kosong untuk sementara */ }) {
+                    IconButton(onClick = { /* Dibiarkan kosong */ }) {
                         Image(
                             painter = painterResource(id = R.drawable.facebook),
                             contentDescription = "Sign up with Facebook",

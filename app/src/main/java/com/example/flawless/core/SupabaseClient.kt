@@ -3,7 +3,6 @@ package com.example.flawless.core
 import io.supabase.kt.Supabase
 import io.supabase.kt.storage.storage
 
-// Ini adalah singleton, artinya kita hanya membuat satu koneksi ke Supabase
 object SupabaseClient {
 
     // GANTI DENGAN URL DAN KUNCI ANDA
