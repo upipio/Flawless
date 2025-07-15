@@ -25,7 +25,6 @@ class DetailPostViewModel : ViewModel() {
 
     // Fungsi untuk mengambil detail satu post berdasarkan ID
     fun fetchPostById(postId: String) {
-        // Jika postId kosong, jangan lakukan apa-apa
         if (postId.isBlank()) {
             _postDetailState.update { it.copy(error = "Post ID tidak valid.") }
             return

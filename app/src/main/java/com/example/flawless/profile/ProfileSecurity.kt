@@ -154,7 +154,7 @@ private fun SecurityOption(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f),
-            color = Color.Black // 4. Warna teks diubah menjadi Hitam
+            color = Color.Black
         )
         Switch(
             checked = checked,

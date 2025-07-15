@@ -92,7 +92,7 @@ fun HomePage1(
             val monthList = postState.groupedPosts.keys.toList()
             val targetIndex = monthList.indexOf(targetMonth)
             if (targetIndex != -1) {
-                // Animasikan scroll ke item bulan yang dituju
+                // Animasi scroll ke item bulan yang dituju
                 scope.launch {
                     listState.animateScrollToItem(index = targetIndex)
                 }
@@ -139,7 +139,7 @@ fun HomePage1(
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { /* Anda sudah di sini */ }) {
+                        IconButton(onClick = {}) {
                             Icon(Icons.Default.Home, contentDescription = "Home", modifier = Modifier.size(30.dp), tint = Color(0xff589591))
                         }
                         IconButton(onClick = { navController.navigate(AppDestinations.CREATE_PAGE) }) {
@@ -174,7 +174,7 @@ fun HomePage1(
                 )
             } else {
                 LazyColumn(
-                    state = listState, // Terapkan state ke LazyColumn
+                    state = listState, // state ke LazyColumn
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
                     items(postState.groupedPosts.entries.toList()) { (month, posts) ->
@@ -198,7 +198,7 @@ fun MonthlyAlbumItem(
     month: String,
     posts: List<Post>,
     navController: NavController,
-    postViewModel: PostViewModel // Terima ViewModel
+    postViewModel: PostViewModel // ViewModel
 ) {
     val pagerState = rememberPagerState(pageCount = { posts.size })
 

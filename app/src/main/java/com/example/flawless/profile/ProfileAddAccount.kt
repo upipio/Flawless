@@ -67,7 +67,6 @@ fun ProfileAddAccount(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- LOGIKA NAVIGASI DITAMBAHKAN DI SINI ---
             AccountOptionItem(
                 icon = painterResource(id = R.drawable.mdi_account_plus_outline),
                 title = "Existing Account",
@@ -77,7 +76,6 @@ fun ProfileAddAccount(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // --- DAN DI SINI ---
             AccountOptionItem(
                 icon = painterResource(id = R.drawable.mdi_account_circle),
                 title = "New Account",
@@ -88,7 +86,7 @@ fun ProfileAddAccount(
     }
 }
 
-// 5. Composable terpisah untuk setiap item opsi agar kode rapi
+// Composable terpisah untuk setiap item opsi agar kode rapi
 @Composable
 private fun AccountOptionItem(
     icon: Painter,

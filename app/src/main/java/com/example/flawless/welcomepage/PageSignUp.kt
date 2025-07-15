@@ -69,7 +69,7 @@ import com.example.flawless.R
 fun SignUpPage(
     navController: NavController,
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = viewModel() // Sekarang ini akan dikenali
+    authViewModel: AuthViewModel = viewModel()
 ) {
     var fullname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -92,7 +92,6 @@ fun SignUpPage(
             Toast.makeText(context, "Error: ${state.error}", Toast.LENGTH_LONG).show()
         }
     }
-    // KODE UI ANDA SAMA PERSIS, TIDAK ADA PERUBAHAN
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -242,7 +241,7 @@ fun SignUpPage(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    IconButton(onClick = { /* Dibiarkan kosong */ }) {
+                    IconButton(onClick = {}) {
                         Image(
                             painter = painterResource(id = R.drawable.google),
                             contentDescription = "Sign up with Google",
@@ -250,7 +249,7 @@ fun SignUpPage(
                         )
                     }
                     Spacer(modifier = Modifier.width(20.dp))
-                    IconButton(onClick = { /* Dibiarkan kosong */ }) {
+                    IconButton(onClick = {}) {
                         Image(
                             painter = painterResource(id = R.drawable.facebook),
                             contentDescription = "Sign up with Facebook",

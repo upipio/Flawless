@@ -58,7 +58,7 @@ fun DetailPost(
     navController: NavController,
     modifier: Modifier = Modifier,
     detailViewModel: DetailPostViewModel = viewModel(),
-    // Tambahkan PostViewModel untuk aksi Favorite/Delete
+    // PostViewModel untuk aksi Favorite/Delete
     postViewModel: PostViewModel = viewModel()
 ) {
     val state by detailViewModel.postDetailState.collectAsState()
@@ -121,7 +121,7 @@ fun DetailPost(
                             modifier = Modifier.weight(1f)
                         )
 
-                        // --- MENU TITIK TIGA DITAMBAHKAN DI SINI ---
+                        // Menu Titik Tiga
                         Box {
                             IconButton(onClick = { menuExpanded = true }) {
                                 Icon(painter = painterResource(id = R.drawable.three_dot_vertical), contentDescription = "More options")

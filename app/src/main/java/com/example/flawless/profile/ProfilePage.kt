@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -64,7 +65,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.flawless.AppDestinations
 import com.example.flawless.R
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,7 +142,7 @@ fun ProfilePage(
                 }
             }
         ) { paddingValues ->
-            // Gunakan LazyColumn agar header bisa ikut ter-scroll
+            // LazyColumn agar header bisa ikut ter-scroll
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -150,10 +150,9 @@ fun ProfilePage(
                     .background(Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Item 1: Header Profil
+                // Header Profil
                 item {
                     if (state.isLoading) {
-                        // Tampilkan Box dengan tinggi yang sama dengan header saat loading
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -178,7 +177,7 @@ fun ProfilePage(
                 }
 
 
-                // Item 2: Ikon Hati
+                // Ikon Hati
                 item {
                     Icon(
                         painter = painterResource(id = R.drawable.mdi_heart),
@@ -190,7 +189,7 @@ fun ProfilePage(
                     )
                 }
 
-                // Item 3: Grid Foto Favorit
+                // Grid Foto Favorit
                 if (state.favoritePosts.isEmpty() && !state.isLoading) {
                     item {
                         Text("Belum ada postingan favorit.", modifier = Modifier.padding(16.dp))
@@ -216,7 +215,7 @@ fun ProfilePage(
                                         }
                                 )
                             }
-                            // Tambahkan spacer agar baris terakhir yang tidak penuh tetap rata kiri
+                            // spacer agar baris terakhir yang tidak penuh tetap rata kiri
                             if (rowItems.size < 3) {
                                 repeat(3 - rowItems.size) {
                                     Spacer(modifier = Modifier.weight(1f).aspectRatio(1f))
@@ -279,9 +278,6 @@ fun ProfileHeader(userProfile: UserProfile?, favoriteCount: Int) {
         }
     }
 }
-
-// Hapus fungsi FavoritePostsGrid karena logikanya sudah dipindahkan
-// ke dalam LazyColumn utama
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -59,7 +59,7 @@ object AppDestinations {
     const val CREATE_PAGE = "create_page"
     const val PROFILE_PAGE = "profile_page"
     const val DETAIL_POST_PAGE = "detail_post_page/{postId}"
-    // Fungsi bantuan untuk membuat rute dengan ID
+    // Fungsi untuk membuat rute dengan ID
     fun createDetailPostRoute(postId: String) = "detail_post_page/$postId"
     const val PROFILE_SETTINGS_PAGE = "profile_settings_page"
     const val SECURITY_PAGE = "security_page"
@@ -110,7 +110,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             route = AppDestinations.HOME_PAGE_1,
             arguments = listOf(navArgument("month") {
                 type = NavType.StringType
-                nullable = true // Argumen ini boleh kosong
+                nullable = true // ini boleh kosong
             })
         ) { backStackEntry ->
             val month = backStackEntry.arguments?.getString("month")

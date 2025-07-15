@@ -64,11 +64,11 @@ fun ProfileSetting(
     val state by settingsViewModel.settingsState.collectAsState()
     val context = LocalContext.current
 
-    // State untuk menampung input dari pengguna
+    // untuk menampung input dari pengguna
     var fullname by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
 
-    // LaunchedEffect untuk mengisi form saat data dari ViewModel tersedia
+    // LaunchedEffect untuk mengisi form
     LaunchedEffect(state) {
         if (fullname.isEmpty() && state.fullname.isNotEmpty()) {
             fullname = state.fullname
@@ -85,7 +85,6 @@ fun ProfileSetting(
         }
     }
 
-    // 2. Menggunakan Scaffold untuk struktur halaman yang benar
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.White,
@@ -200,7 +199,7 @@ private fun SettingTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true // Tambahkan parameter enabled
+    enabled: Boolean = true
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -213,7 +212,7 @@ private fun SettingTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = modifier.fillMaxWidth(),
-            enabled = enabled, // Gunakan parameter enabled
+            enabled = enabled,
             shape = RoundedCornerShape(12.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xffffa7a7).copy(alpha = 0.3f),
@@ -233,6 +232,5 @@ private fun SettingTextField(
 @Preview(showBackground = true)
 @Composable
 private fun ProfileSettingPreview() {
-    // Jangan lupa sertakan NavController di preview
     ProfileSetting(navController = rememberNavController())
 }

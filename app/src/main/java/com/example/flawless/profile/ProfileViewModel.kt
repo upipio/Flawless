@@ -2,7 +2,7 @@ package com.example.flawless.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flawless.homepage.Post // Import data class Post
+import com.example.flawless.homepage.Post
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -34,7 +34,7 @@ class ProfileViewModel : ViewModel() {
     val profileState = _profileState.asStateFlow()
 
     init {
-        // Panggil fungsi utama untuk memuat semua data profil
+        // fungsi utama untuk memuat semua data profil
         loadProfileData()
     }
 
@@ -48,18 +48,18 @@ class ProfileViewModel : ViewModel() {
             }
 
             try {
-                // 1. Ambil data profil pengguna (seperti sebelumnya)
+                // Ambil data profil pengguna (seperti sebelumnya)
                 val profileDoc = db.collection("users").document(userId).get().await()
                 val userProfile = profileDoc.toObject(UserProfile::class.java)
 
-                // 2. Ambil postingan yang difavoritkan
+                // Ambil postingan yang difavoritkan
                 val favoritePostsSnapshot = db.collection("posts")
                     .whereArrayContains("favoritedBy", userId) // Query utama untuk favorit
                     .get()
                     .await()
                 val favoritePosts = favoritePostsSnapshot.toObjects(Post::class.java)
 
-                // 3. Update state dengan semua data baru
+                // Update state dengan semua data baru
                 _profileState.update {
                     it.copy(
                         isLoading = false,

@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flawless.core.SupabaseClient // Pastikan ini tidak merah
+import com.example.flawless.core.SupabaseClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,14 +20,12 @@ import java.util.UUID
 class StorageViewModel : ViewModel() {
 
     private val client = OkHttpClient()
-
-    // Kita ubah agar menggunakan State, sama seperti ViewModel lain
     private val _uploadState = MutableStateFlow(UploadState())
     val uploadState = _uploadState.asStateFlow()
 
     fun uploadImage(
         imageUri: Uri,
-        context: Context, // Tambahkan context
+        context: Context,
         bucketName: String = "post-images"
     ) {
         viewModelScope.launch {
@@ -75,7 +73,7 @@ class StorageViewModel : ViewModel() {
     }
 }
 
-// Data class untuk state upload (bisa ditaruh di sini atau file terpisah)
+// Data class untuk state upload
 data class UploadState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,

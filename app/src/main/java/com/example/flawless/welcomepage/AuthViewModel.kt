@@ -19,7 +19,7 @@ data class SignUpState(
     val error: String? = null
 )
 
-// State BARU untuk Login
+// State untuk Login
 data class LoginState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
@@ -34,7 +34,7 @@ class AuthViewModel : ViewModel() {
     private val _signUpState = MutableStateFlow(SignUpState())
     val signUpState = _signUpState.asStateFlow()
 
-    // State BARU untuk Login
+    // State untuk Login
     private val _loginState = MutableStateFlow(LoginState())
     val loginState = _loginState.asStateFlow()
 
@@ -62,7 +62,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // Fungsi BARU untuk Login
+    // Fungsi untuk Login
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
             _loginState.update { it.copy(isLoading = true, error = null) }
@@ -79,7 +79,7 @@ class AuthViewModel : ViewModel() {
         _signUpState.value = SignUpState()
     }
 
-    // Fungsi BARU untuk mereset state login
+    // Fungsi untuk mereset state login
     fun resetLoginState() {
         _loginState.value = LoginState()
     }

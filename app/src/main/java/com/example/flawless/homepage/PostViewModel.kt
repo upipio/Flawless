@@ -30,7 +30,6 @@ data class Post(
 // State baru untuk menampung data yang sudah dikelompokkan
 data class PostFeedState(
     val isLoading: Boolean = false,
-    // Kunci adalah nama bulan (e.g., "July 2025"), Value adalah daftar postingan
     val groupedPosts: Map<String, List<Post>> = emptyMap(),
     val error: String? = null
 )
@@ -56,7 +55,7 @@ class PostViewModel : ViewModel() {
                     .await()
                 val posts = snapshot.toObjects(Post::class.java)
 
-                // Logika untuk mengelompokkan postingan berdasarkan bulan dan tahun
+                // untuk mengelompokkan postingan berdasarkan bulan dan tahun
                 val sdf = SimpleDateFormat("MMMM yyyy", Locale.US)
                 val grouped = posts.groupBy { post ->
                     sdf.format(Date(post.timestamp))

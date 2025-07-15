@@ -82,10 +82,10 @@ fun HomePageOff(
                     }
                 },
                 actions = {
-                    // Tombol ini sekarang mengarah ke HomePage1 tanpa argumen
+                    // mengarah ke HomePage1 tanpa argumen
                     IconButton(onClick = { navController.navigate(AppDestinations.createHome1Route()) }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.frame_calendar), // Ganti ikon jika perlu
+                            painter = painterResource(id = R.drawable.frame_calendar),
                             contentDescription = "Grid View",
                             modifier = Modifier.size(24.dp)
                         )

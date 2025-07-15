@@ -71,15 +71,15 @@ fun LoginPage(
     var rememberMe by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    // 1. Ambil state login dari ViewModel
+    // state login dari ViewModel
     val state by authViewModel.loginState.collectAsState()
 
-    // 2. LaunchedEffect untuk menangani navigasi & notifikasi
+    // LaunchedEffect untuk menangani navigasi & notifikasi
     LaunchedEffect(key1 = state) {
         if (state.isSuccess) {
             Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT).show()
             navController.navigate(AppDestinations.HOME_PAGE_OFF) {
-                // Hapus semua halaman sebelumnya dari back stack
+                // Hapus semua halaman sebelumnya
                 popUpTo(0) { inclusive = true }
             }
             authViewModel.resetLoginState()
@@ -184,7 +184,7 @@ fun LoginPage(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 3. Update Button untuk bereaksi terhadap state
+                // Update Button
                 Button(
                     onClick = {
                         if (email.isBlank() || password.isBlank()) {
@@ -207,7 +207,6 @@ fun LoginPage(
                     }
                 }
 
-                // ... sisa kode UI sama ...
                 Spacer(modifier = Modifier.height(35.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Divider(color = Color(0xff84bdb9), modifier = Modifier.weight(1f))
@@ -223,7 +222,7 @@ fun LoginPage(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = {}) {
                         Image(
                             painter = painterResource(id = R.drawable.google),
                             contentDescription = "Sign in with Google",
@@ -231,7 +230,7 @@ fun LoginPage(
                         )
                     }
                     Spacer(modifier = Modifier.width(20.dp))
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = {}) {
                         Image(
                             painter = painterResource(id = R.drawable.facebook),
                             contentDescription = "Sign in with Facebook",
