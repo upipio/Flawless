@@ -80,7 +80,7 @@ fun EditPostPage(
         topBar = {
             Column(modifier = Modifier.background(Color.White)) {
                 CenterAlignedTopAppBar(
-                    title = { Text("Create Post", color = Color(0xfffa9a97)) },
+                    title = { Text("Edit Post", color = Color(0xfffa9a97)) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.Close, contentDescription = "Cancel")
