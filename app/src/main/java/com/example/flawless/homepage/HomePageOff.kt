@@ -29,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,6 +43,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.flawless.AppDestinations
@@ -53,19 +56,19 @@ import java.util.Locale
 @Composable
 fun HomePageOff(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    postViewModel: PostViewModel = viewModel()
 ) {
+
+    val postState by postViewModel.postFeedState.collectAsState()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.flawless),
-                            contentDescription = "Logo",
-                            modifier = Modifier.size(40.dp)
-                        )
+                        Image(painter = painterResource(id = R.drawable.flawless), contentDescription = "Logo", modifier = Modifier.size(40.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = buildAnnotatedString {
@@ -77,17 +80,16 @@ fun HomePageOff(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate(AppDestinations.HOME_PAGE_OFF)}) {
+                    // Tombol ini sekarang mengarah ke HomePage1 tanpa argumen
+                    IconButton(onClick = { navController.navigate(AppDestinations.createHome1Route()) }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.frame_calendar),
-                            contentDescription = "Calendar View",
+                            painter = painterResource(id = R.drawable.frame_calendar), // Ganti ikon jika perlu
+                            contentDescription = "Grid View",
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         },
         bottomBar = {
@@ -117,24 +119,27 @@ fun HomePageOff(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) //
+                .padding(paddingValues)
                 .background(Color.White)
         ) {
             Divider(color = Color(0xff4F4F4F).copy(alpha = 0.5f), thickness = 2.dp)
 
-            // Menggunakan daftar bulan dinamis
-            val months = getMonthsList()
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize() // LazyColumn mengisi sisa ruang Column
-            ) {
-                items(months) { month ->
-                    MonthItem(
-                        month = month,
-                        onClick = {
-                            navController.navigate(AppDestinations.HOME_PAGE_1)
-                        }
-                    )
+            if (postState.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                // Tampilkan daftar bulan dari ViewModel
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(postState.groupedPosts.keys.toList()) { month ->
+                        MonthItem(
+                            month = month,
+                            onClick = {
+                                // Navigasi ke HomePage1 dengan membawa nama bulan
+                                navController.navigate(AppDestinations.createHome1Route(month))
+                            }
+                        )
+                    }
                 }
             }
         }

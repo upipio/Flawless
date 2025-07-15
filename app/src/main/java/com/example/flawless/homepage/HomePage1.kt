@@ -1,5 +1,6 @@
 package com.example.flawless.homepage
 
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +49,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,18 +73,31 @@ import com.example.flawless.AppDestinations
 import com.example.flawless.R
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage1(
     navController: NavController,
+    targetMonth: String? = null, // Terima argumen bulan
     modifier: Modifier = Modifier,
     postViewModel: PostViewModel = viewModel()
 ) {
     val postState by postViewModel.postFeedState.collectAsState()
+    val listState = rememberLazyListState() // State untuk mengontrol LazyColumn
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        postViewModel.fetchPosts()
+    LaunchedEffect(postState.groupedPosts) {
+        if (!targetMonth.isNullOrEmpty() && postState.groupedPosts.isNotEmpty()) {
+            val monthList = postState.groupedPosts.keys.toList()
+            val targetIndex = monthList.indexOf(targetMonth)
+            if (targetIndex != -1) {
+                // Animasikan scroll ke item bulan yang dituju
+                scope.launch {
+                    listState.animateScrollToItem(index = targetIndex)
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -157,11 +173,10 @@ fun HomePage1(
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else {
-                // Gunakan LazyColumn untuk daftar bulan
                 LazyColumn(
+                    state = listState, // Terapkan state ke LazyColumn
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    // Iterasi untuk setiap bulan di dalam map
                     items(postState.groupedPosts.entries.toList()) { (month, posts) ->
                         MonthlyAlbumItem(
                             month = month,
@@ -183,7 +198,7 @@ fun MonthlyAlbumItem(
     month: String,
     posts: List<Post>,
     navController: NavController,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel // Terima ViewModel
 ) {
     val pagerState = rememberPagerState(pageCount = { posts.size })
 
@@ -193,7 +208,6 @@ fun MonthlyAlbumItem(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
-        // Slider horizontal untuk postingan di bulan tersebut
         HorizontalPager(
             state = pagerState,
             contentPadding = PaddingValues(horizontal = 24.dp),
@@ -202,10 +216,9 @@ fun MonthlyAlbumItem(
             PostCard(
                 post = posts[pageIndex],
                 navController = navController,
-                postViewModel = postViewModel
+                postViewModel = postViewModel // Kirim instance ViewModel yang sama
             )
         }
-        // Indikator titik
         Row(
             Modifier
                 .height(20.dp)
@@ -221,12 +234,11 @@ fun MonthlyAlbumItem(
     }
 }
 
-
 @Composable
 fun PostCard(
     post: Post,
     navController: NavController,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel // Terima ViewModel
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val currentUser = Firebase.auth.currentUser
@@ -282,7 +294,6 @@ fun PostCard(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
                     ) {
-                        // Opsi Favorite, selalu ada untuk semua postingan
                         DropdownMenuItem(
                             text = { Text(if (isFavorited) "Unfavorite" else "Favorite") },
                             onClick = {
@@ -290,13 +301,11 @@ fun PostCard(
                                 menuExpanded = false
                             }
                         )
-
-                        // Opsi Edit dan Delete hanya muncul jika post ini milik pengguna
                         if (currentUser?.uid == post.userId) {
                             DropdownMenuItem(
                                 text = { Text("Edit") },
                                 onClick = {
-                                    // TODO: Navigasi ke halaman Edit
+                                    navController.navigate(AppDestinations.createEditPostRoute(post.id))
                                     menuExpanded = false
                                 }
                             )

@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.flawless.homepage.CreatePage
 import com.example.flawless.homepage.DetailPost
+import com.example.flawless.homepage.EditPostPage
 import com.example.flawless.homepage.HomePage1
 import com.example.flawless.homepage.HomePageOff
 import com.example.flawless.profile.ProfileAddAccount
@@ -53,7 +54,8 @@ object AppDestinations {
     const val SIGN_UP_PAGE = "sign_up_page"
     const val LOGIN_PAGE = "login_page"
     const val HOME_PAGE_OFF = "home_page_off"
-    const val HOME_PAGE_1 = "home_page_1"
+    const val HOME_PAGE_1 = "home_page_1?month={month}"
+    fun createHome1Route(month: String? = null) = "home_page_1?month=${month.orEmpty()}"
     const val CREATE_PAGE = "create_page"
     const val PROFILE_PAGE = "profile_page"
     const val DETAIL_POST_PAGE = "detail_post_page/{postId}"
@@ -62,6 +64,8 @@ object AppDestinations {
     const val PROFILE_SETTINGS_PAGE = "profile_settings_page"
     const val SECURITY_PAGE = "security_page"
     const val ADD_ACCOUNT_PAGE = "add_account_page"
+    const val EDIT_POST_PAGE = "edit_post_page/{postId}"
+    fun createEditPostRoute(postId: String) = "edit_post_page/$postId"
 }
 
 @Composable
@@ -102,10 +106,18 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 navController = navController,
                 modifier = Modifier.fillMaxSize())
         }
-        composable(AppDestinations.HOME_PAGE_1) {
+        composable(
+            route = AppDestinations.HOME_PAGE_1,
+            arguments = listOf(navArgument("month") {
+                type = NavType.StringType
+                nullable = true // Argumen ini boleh kosong
+            })
+        ) { backStackEntry ->
+            val month = backStackEntry.arguments?.getString("month")
             HomePage1(
                 navController = navController,
-                modifier = Modifier.fillMaxSize())
+                targetMonth = month // Kirim argumen bulan ke halaman
+            )
         }
         composable(AppDestinations.CREATE_PAGE) {
             CreatePage(
@@ -142,6 +154,16 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileAddAccount(
                 navController = navController,
                 modifier = Modifier.fillMaxSize())
+        }
+        composable(
+            route = AppDestinations.EDIT_POST_PAGE,
+            arguments = listOf(navArgument("postId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId") ?: ""
+            EditPostPage(
+                postId = postId,
+                navController = navController
+            )
         }
     }
 }

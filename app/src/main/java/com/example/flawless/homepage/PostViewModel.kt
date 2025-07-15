@@ -124,4 +124,22 @@ class PostViewModel : ViewModel() {
             }
         }
     }
+    fun updatePost(postId: String, newTitle: String, newDescription: String, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                db.collection("posts").document(postId)
+                    .update(
+                        mapOf(
+                            "title" to newTitle,
+                            "description" to newDescription
+                        )
+                    ).await()
+                fetchPosts() // Refresh data setelah update
+                onComplete(true)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onComplete(false)
+            }
+        }
+    }
 }
