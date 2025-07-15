@@ -69,7 +69,8 @@ import coil.compose.rememberAsyncImagePainter
 fun CreatePage(
     navController: NavController,
     modifier: Modifier = Modifier,
-    storageViewModel: StorageViewModel = viewModel()
+    storageViewModel: StorageViewModel = viewModel(),
+    postViewModel: PostViewModel = viewModel()
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -86,19 +87,23 @@ fun CreatePage(
         }
     }
 
-    // LaunchedEffect untuk menangani hasil upload
     LaunchedEffect(uploadState) {
         if (uploadState.isSuccess) {
-            val imageUrl = uploadState.imageUrl
-            Toast.makeText(context, "Upload berhasil! URL: $imageUrl", Toast.LENGTH_LONG).show()
-
-            // TODO: Langkah 5 - Simpan post (URL, judul, deskripsi) ke Firestore
-            // Untuk sekarang, kita kembali ke halaman sebelumnya
-            navController.popBackStack()
-            storageViewModel.resetUploadState()
+            uploadState.imageUrl?.let { imageUrl ->
+                postViewModel.createPost(imageUrl, title, description) { success ->
+                    if (success) {
+                        Toast.makeText(context, "Postingan berhasil dibuat!", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
+                    } else {
+                        Toast.makeText(context, "Gagal menyimpan data postingan.", Toast.LENGTH_SHORT).show()
+                    }
+                    storageViewModel.resetUploadState()
+                }
+            }
         }
         if (uploadState.error != null) {
             Toast.makeText(context, "Upload gagal: ${uploadState.error}", Toast.LENGTH_LONG).show()
+            storageViewModel.resetUploadState()
         }
     }
 
@@ -106,7 +111,6 @@ fun CreatePage(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.White,
         topBar = {
-            // ... (Kode TopAppBar tidak berubah)
             Column(modifier = Modifier.background(Color.White)) {
                 CenterAlignedTopAppBar(
                     title = { Text("Create Post", color = Color(0xfffa9a97)) },
@@ -170,7 +174,6 @@ fun CreatePage(
                         if (selectedImageUris.isEmpty() || title.isBlank() || description.isBlank()) {
                             Toast.makeText(context, "Harap tambahkan foto dan isi semua kolom", Toast.LENGTH_SHORT).show()
                         } else {
-                            // Panggil fungsi upload dengan context
                             storageViewModel.uploadImage(selectedImageUris.first(), context)
                         }
                     },
@@ -186,7 +189,6 @@ fun CreatePage(
         }
     }
 }
-// ... (Kode untuk PhotoPickerSection dan CustomTextField tidak berubah)
 @Composable
 private fun PhotoPickerSection(
     selectedImageUris: List<Uri>,
