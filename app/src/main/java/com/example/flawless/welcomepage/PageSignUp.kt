@@ -36,6 +36,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,6 +78,20 @@ fun SignUpPage(
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val state by authViewModel.signUpState.collectAsState()
+    LaunchedEffect(key1 = state) {
+        if (state.isSuccess) {
+            Toast.makeText(context, "Pendaftaran berhasil!", Toast.LENGTH_SHORT).show()
+            navController.navigate(AppDestinations.LOGIN_PAGE) {
+                // Hapus halaman sign up dari back stack
+                popUpTo(AppDestinations.SIGN_UP_PAGE) { inclusive = true }
+            }
+            authViewModel.resetSignUpState() // Reset state setelah berhasil
+        }
+        if (state.error != null) {
+            Toast.makeText(context, "Error: ${state.error}", Toast.LENGTH_LONG).show()
+        }
+    }
     // KODE UI ANDA SAMA PERSIS, TIDAK ADA PERUBAHAN
     Box(
         modifier = modifier.fillMaxSize()
@@ -193,19 +209,9 @@ fun SignUpPage(
                 Button(
                     onClick = {
                         if (fullname.isBlank() || email.isBlank() || password.isBlank()) {
-                            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        isLoading = true
-                        // 3. Kirim 'fullname' ke ViewModel
-                        authViewModel.createUser(email, password, fullname) { success, message ->
-                            isLoading = false
-                            if (success) {
-                                Toast.makeText(context, "Registration successful!", Toast.LENGTH_SHORT).show()
-                                navController.navigate(AppDestinations.LOGIN_PAGE)
-                            } else {
-                                Toast.makeText(context, "Error: ${message ?: "Unknown error"}", Toast.LENGTH_LONG).show()
-                            }
+                            Toast.makeText(context, "Harap isi semua kolom", Toast.LENGTH_SHORT).show()
+                        } else {
+                            authViewModel.createUser(email, password, fullname)
                         }
                     },
                     modifier = Modifier
@@ -213,9 +219,9 @@ fun SignUpPage(
                         .height(50.dp),
                     shape = RoundedCornerShape(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xfffa9a97)),
-                    enabled = !isLoading
+                    enabled = !state.isLoading // Tombol nonaktif saat loading
                 ) {
-                    if (isLoading) {
+                    if (state.isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                     } else {
                         Text("Get Started", color = Color.White, fontSize = 16.sp)

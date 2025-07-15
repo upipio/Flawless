@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -28,6 +27,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -43,6 +43,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -59,6 +61,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.flawless.AppDestinations
@@ -70,25 +73,27 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfilePage(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    profileViewModel: ProfileViewModel = viewModel() // Tambahkan ViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // 1. Menggunakan ModalNavigationDrawer dengan arah dari KANAN
+    // Ambil state dari ViewModel
+    val state by profileViewModel.profileState.collectAsState()
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            // Konten menu settings diletakkan di sini
             SettingsDrawerContent(navController = navController, drawerState = drawerState)
         },
-        gesturesEnabled = true, // Tetap aktifkan gestur
+        gesturesEnabled = true,
         scrimColor = Color.Black.copy(alpha = 0.3f)
     ) {
         Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
-                // 1. Divider untuk TopBar
+                // ... (Kode TopAppBar tidak berubah)
                 Column {
                     TopAppBar(
                         title = {
@@ -111,18 +116,15 @@ fun ProfilePage(
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
                     )
-                    Divider(color = Color.Gray.copy(alpha = 0.3f)) // Divider di bawah TopAppBar
+                    Divider(color = Color.Gray.copy(alpha = 0.3f))
                 }
             },
             bottomBar = {
-                // BottomAppBar dibungkus Column untuk efek shadow/pembatas
+                // ... (Kode BottomAppBar tidak berubah)
                 Column {
-                    // Ini akan memberi efek garis bayangan di atas BottomAppBar
                     Divider(thickness = 2.dp, color = Color(0xff589591).copy(alpha = 0.6f))
                     BottomAppBar(
                         containerColor = Color.White,
-                        // Shadow bisa ditambahkan di sini jika diinginkan
-                        // modifier = Modifier.shadow(elevation = 8.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -143,50 +145,44 @@ fun ProfilePage(
                 }
             }
         ) { paddingValues ->
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .background(Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Item pertama: Header Profil
-                item {
-                    ProfileHeader()
-                }
+                if (state.isLoading) {
+                    // Tampilkan loading indicator jika sedang memuat
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 64.dp))
+                } else if (state.error != null) {
+                    // Tampilkan pesan error jika terjadi kesalahan
+                    Text(
+                        text = "Error: ${state.error}",
+                        color = Color.Red,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                } else {
+                    // Tampilkan konten jika berhasil
+                    ProfileHeader(userProfile = state.userProfile)
 
-                // Item kedua: Divider di bawah Header
-                /*item {
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                }*/
-
-                // Item ketiga: Ikon Hati
-                item {
                     Icon(
                         painter = painterResource(id = R.drawable.mdi_heart),
                         contentDescription = "Favorite section",
                         tint = Color(0xffffa7a7),
-                        /*modifier = Modifier.size(30.dp)*/
-                                modifier = Modifier
-                                .padding(vertical = 12.dp)
+                        modifier = Modifier
+                            .padding(vertical = 12.dp)
                             .size(30.dp)
                     )
-                }
 
-                // Item keempat: Divider di bawah ikon hati
-                /*item {
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                }*/
-
-                // Item kelima: Grid Foto
-                item {
+                    // Data grid foto masih menggunakan data statis untuk saat ini
                     val favoritePosts = remember {
                         generateFixedHomePageData().flatMap { it.posts }.shuffled()
                     }
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
                         modifier = Modifier
-                            .heightIn(max = 1000.dp) // Beri tinggi maksimal
+                            .heightIn(max = 1000.dp)
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(2.dp),
                         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -207,8 +203,9 @@ fun ProfilePage(
     }
 }
 
+// Ubah ProfileHeader untuk menerima data UserProfile
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(userProfile: UserProfile?) {
     val gradient = Brush.horizontalGradient(
         colors = listOf(Color(0xff84bdb9), Color(0xfffa9a97))
     )
@@ -216,8 +213,6 @@ fun ProfileHeader() {
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
-            /*.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-            .clip(RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp))*/ // Membuat sudut melengkung
             .background(gradient)
     ) {
         Row(
@@ -229,18 +224,29 @@ fun ProfileHeader() {
             Image(
                 painter = painterResource(id = R.drawable.mdi_account_circle),
                 contentDescription = "Profile Picture",
-                /*modifier = Modifier.size(80.dp)*/
-                        modifier = Modifier
-                        .size(90.dp)
+                modifier = Modifier
+                    .size(90.dp)
                     .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(verticalArrangement = Arrangement.Center) {
-                Text("FULL NAME", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                Text("Posts: 0", color = Color.White, style = MaterialTheme.typography.bodyMedium) // ganti sesuai jumlah post dan namanya
+                Text(
+                    // Tampilkan nama dari UserProfile, atau "Loading..."
+                    text = userProfile?.fullname?.uppercase() ?: "LOADING...",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    // Tampilkan email dari UserProfile
+                    text = userProfile?.email ?: "",
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    "New Memories, New Life. Preserving amazing moments forever!!!",
+                    // Tampilkan bio dari UserProfile
+                    text = userProfile?.bio ?: "",
                     color = Color.White,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 2
@@ -250,7 +256,7 @@ fun ProfileHeader() {
     }
 }
 
-// Composable terpisah untuk konten menu settings
+// ... (Kode SettingsDrawerContent dan Preview tidak berubah)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsDrawerContent(
@@ -258,14 +264,12 @@ fun SettingsDrawerContent(
     drawerState: DrawerState
 ) {
     val scope = rememberCoroutineScope()
-    // 1. Atur warna container LANGSUNG di ModalDrawerSheet
     ModalDrawerSheet(
         modifier = Modifier.width(250.dp),
-        drawerContainerColor = Color.White, // <-- Kunci #1: Memastikan seluruh container putih
-        drawerContentColor = Color.Black    // <-- Kunci #2: Menjadikan hitam sebagai warna default konten
+        drawerContainerColor = Color.White,
+        drawerContentColor = Color.Black
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Header "Settings"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -275,8 +279,6 @@ fun SettingsDrawerContent(
             ) {
                 Text("Settings", color = Color.White, style = MaterialTheme.typography.titleLarge)
             }
-
-            // Column untuk item menu, tidak perlu background lagi
             Column {
                 SettingMenuItem(text = "Profile Setting") {
                     scope.launch { drawerState.close() }
@@ -295,10 +297,7 @@ fun SettingsDrawerContent(
                     navController.navigate(AppDestinations.WELCOME_PAGE)
                 }
             }
-
-            // Spacer mendorong Logout ke bawah
             Spacer(modifier = Modifier.weight(1f))
-
             SettingMenuItem(text = "Logout") {
                 scope.launch { drawerState.close() }
                 navController.navigate(AppDestinations.WELCOME_PAGE) {
@@ -308,8 +307,6 @@ fun SettingsDrawerContent(
         }
     }
 }
-
-// Composable untuk setiap baris menu
 @Composable
 fun SettingMenuItem(text: String, onClick: () -> Unit) {
     Column {
@@ -320,12 +317,11 @@ fun SettingMenuItem(text: String, onClick: () -> Unit) {
                 .clickable(onClick = onClick)
                 .padding(16.dp),
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Red // 2. teks diubah menjadi merah
+            color = Color.Black
         )
         Divider(color = Color.Gray.copy(alpha = 0.2f))
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun ProfilePagePreview() {

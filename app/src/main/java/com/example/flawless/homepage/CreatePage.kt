@@ -44,6 +44,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,8 +74,9 @@ fun CreatePage(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val uploadState by storageViewModel.uploadState.collectAsState()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
@@ -83,10 +86,27 @@ fun CreatePage(
         }
     }
 
+    // LaunchedEffect untuk menangani hasil upload
+    LaunchedEffect(uploadState) {
+        if (uploadState.isSuccess) {
+            val imageUrl = uploadState.imageUrl
+            Toast.makeText(context, "Upload berhasil! URL: $imageUrl", Toast.LENGTH_LONG).show()
+
+            // TODO: Langkah 5 - Simpan post (URL, judul, deskripsi) ke Firestore
+            // Untuk sekarang, kita kembali ke halaman sebelumnya
+            navController.popBackStack()
+            storageViewModel.resetUploadState()
+        }
+        if (uploadState.error != null) {
+            Toast.makeText(context, "Upload gagal: ${uploadState.error}", Toast.LENGTH_LONG).show()
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.White,
         topBar = {
+            // ... (Kode TopAppBar tidak berubah)
             Column(modifier = Modifier.background(Color.White)) {
                 CenterAlignedTopAppBar(
                     title = { Text("Create Post", color = Color(0xfffa9a97)) },
@@ -148,23 +168,15 @@ fun CreatePage(
                 Button(
                     onClick = {
                         if (selectedImageUris.isEmpty() || title.isBlank() || description.isBlank()) {
-                            Toast.makeText(context, "Please add photos and fill all fields", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        isLoading = true
-                        storageViewModel.uploadImage(context, selectedImageUris.first()) { success, imageUrl, message ->
-                            isLoading = false
-                            if (success) {
-                                Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
-                                navController.popBackStack()
-                            } else {
-                                Toast.makeText(context, "Upload failed: $message", Toast.LENGTH_LONG).show()
-                            }
+                            Toast.makeText(context, "Harap tambahkan foto dan isi semua kolom", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Panggil fungsi upload dengan context
+                            storageViewModel.uploadImage(selectedImageUris.first(), context)
                         }
                     },
-                    enabled = !isLoading
+                    enabled = !uploadState.isLoading
                 ) {
-                    if (isLoading) {
+                    if (uploadState.isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                     } else {
                         Text("Save")
@@ -174,7 +186,7 @@ fun CreatePage(
         }
     }
 }
-
+// ... (Kode untuk PhotoPickerSection dan CustomTextField tidak berubah)
 @Composable
 private fun PhotoPickerSection(
     selectedImageUris: List<Uri>,
@@ -228,9 +240,6 @@ private fun PhotoPickerSection(
         }
     }
 }
-
-// Hapus fungsi PhotoUploader dan ImagePickerDialog yang duplikat
-
 @Composable
 private fun CustomTextField(
     label: String,
@@ -262,7 +271,6 @@ private fun CustomTextField(
         )
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 private fun CreatePagePreview() {

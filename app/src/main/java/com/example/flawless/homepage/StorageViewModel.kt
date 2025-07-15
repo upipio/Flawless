@@ -4,8 +4,11 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flawless.core.SupabaseClient
+import com.example.flawless.core.SupabaseClient // Pastikan ini tidak merah
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -16,61 +19,66 @@ import java.util.UUID
 
 class StorageViewModel : ViewModel() {
 
-    // Buat client OkHttp
     private val client = OkHttpClient()
 
+    // Kita ubah agar menggunakan State, sama seperti ViewModel lain
+    private val _uploadState = MutableStateFlow(UploadState())
+    val uploadState = _uploadState.asStateFlow()
+
     fun uploadImage(
-        context: Context,
         imageUri: Uri,
-        bucketName: String = "post-images",
-        onComplete: (success: Boolean, imageUrl: String?, message: String?) -> Unit
+        context: Context, // Tambahkan context
+        bucketName: String = "post-images"
     ) {
         viewModelScope.launch {
+            _uploadState.update { it.copy(isLoading = true, error = null) }
             try {
-                // Dapatkan byte dari file gambar
                 val inputStream = context.contentResolver.openInputStream(imageUri)
                 val bytes = inputStream?.readBytes()
                 inputStream?.close()
 
                 if (bytes == null) {
-                    onComplete(false, null, "Gagal membaca file dari URI.")
-                    return@launch
+                    throw Exception("Gagal membaca file dari URI.")
                 }
 
-                // Buat nama file unik dan URL endpoint
                 val fileName = "${UUID.randomUUID()}.jpg"
                 val url = "${SupabaseClient.SUPABASE_URL}/storage/v1/object/$bucketName/$fileName"
-
-                // Buat request body dengan byte gambar
                 val requestBody = bytes.toRequestBody("image/jpeg".toMediaType())
 
-                // Bangun request HTTP PUT dengan header yang diperlukan
                 val request = Request.Builder()
                     .url(url)
-                    .put(requestBody) // Gunakan PUT untuk mengunggah
+                    .put(requestBody)
                     .addHeader("apikey", SupabaseClient.SUPABASE_ANON_KEY)
                     .addHeader("Authorization", "Bearer ${SupabaseClient.SUPABASE_ANON_KEY}")
-                    .addHeader("x-upsert", "true") // Otomatis buat file jika belum ada
+                    .addHeader("x-upsert", "true")
                     .build()
 
-                // Jalankan request di background thread
                 withContext(Dispatchers.IO) {
                     client.newCall(request).execute().use { response ->
                         if (response.isSuccessful) {
-                            // Jika berhasil, buat URL publik secara manual
                             val publicUrl = "${SupabaseClient.SUPABASE_URL}/storage/v1/object/public/$bucketName/$fileName"
-                            onComplete(true, publicUrl, "Unggah berhasil!")
+                            _uploadState.update { it.copy(isLoading = false, isSuccess = true, imageUrl = publicUrl) }
                         } else {
-                            // Jika gagal, kirim pesan error
-                            val errorBody = response.body?.string()
-                            onComplete(false, null, "Gagal: ${response.code} - $errorBody")
+                            throw Exception("Gagal: ${response.code} - ${response.body?.string()}")
                         }
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                onComplete(false, null, e.message ?: "Terjadi error yang tidak diketahui.")
+                _uploadState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
     }
+
+    fun resetUploadState() {
+        _uploadState.value = UploadState()
+    }
 }
+
+// Data class untuk state upload (bisa ditaruh di sini atau file terpisah)
+data class UploadState(
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val imageUrl: String? = null,
+    val error: String? = null
+)

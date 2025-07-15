@@ -35,10 +35,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,21 +64,32 @@ import com.example.flawless.R
 fun LoginPage(
     navController: NavController,
     modifier: Modifier = Modifier,
-    // 1. Panggil ViewModel untuk logika backend
     authViewModel: AuthViewModel = viewModel()
 ) {
-    // State UI Anda yang sudah ada
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
-
-    // State BARU untuk loading & notifikasi
-    var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
+
+    // 1. Ambil state login dari ViewModel
+    val state by authViewModel.loginState.collectAsState()
+
+    // 2. LaunchedEffect untuk menangani navigasi & notifikasi
+    LaunchedEffect(key1 = state) {
+        if (state.isSuccess) {
+            Toast.makeText(context, "Login Berhasil!", Toast.LENGTH_SHORT).show()
+            navController.navigate(AppDestinations.HOME_PAGE_OFF) {
+                // Hapus semua halaman sebelumnya dari back stack
+                popUpTo(0) { inclusive = true }
+            }
+            authViewModel.resetLoginState()
+        }
+        if (state.error != null) {
+            Toast.makeText(context, "Login Gagal: ${state.error}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.background),
             contentDescription = "Background",
@@ -135,14 +147,16 @@ fun LoginPage(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Your Email") },
-                    //... (sisa kode sama)
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Your Password") },
-                    //... (sisa kode sama)
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -169,23 +183,14 @@ fun LoginPage(
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
+
+                // 3. Update Button untuk bereaksi terhadap state
                 Button(
                     onClick = {
                         if (email.isBlank() || password.isBlank()) {
-                            Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        isLoading = true
-                        authViewModel.loginUser(email, password) { success, message ->
-                            isLoading = false
-                            if (success) {
-                                Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
-                                navController.navigate(AppDestinations.HOME_PAGE_OFF) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            } else {
-                                Toast.makeText(context, "Login Failed: ${message ?: "Invalid credentials"}", Toast.LENGTH_LONG).show()
-                            }
+                            Toast.makeText(context, "Harap masukkan email dan password", Toast.LENGTH_SHORT).show()
+                        } else {
+                            authViewModel.loginUser(email, password)
                         }
                     },
                     modifier = Modifier
@@ -193,16 +198,16 @@ fun LoginPage(
                         .height(50.dp),
                     shape = RoundedCornerShape(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xff84bdb9)),
-                    enabled = !isLoading // Nonaktifkan tombol saat loading
+                    enabled = !state.isLoading
                 ) {
-                    if (isLoading) {
+                    if (state.isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                     } else {
                         Text(text = "Log In", color = Color.White, fontSize = 16.sp)
                     }
                 }
-                // =============================================
 
+                // ... sisa kode UI sama ...
                 Spacer(modifier = Modifier.height(35.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Divider(color = Color(0xff84bdb9), modifier = Modifier.weight(1f))
