@@ -30,11 +30,11 @@ class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
     private val db = Firebase.firestore
 
-    // --- State untuk Sign Up ---
+    // State untuk Sign Up
     private val _signUpState = MutableStateFlow(SignUpState())
     val signUpState = _signUpState.asStateFlow()
 
-    // --- State BARU untuk Login ---
+    // State BARU untuk Login
     private val _loginState = MutableStateFlow(LoginState())
     val loginState = _loginState.asStateFlow()
 
@@ -62,7 +62,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // --- Fungsi BARU untuk Login ---
+    // Fungsi BARU untuk Login
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
             _loginState.update { it.copy(isLoading = true, error = null) }
@@ -79,8 +79,25 @@ class AuthViewModel : ViewModel() {
         _signUpState.value = SignUpState()
     }
 
-    // --- Fungsi BARU untuk mereset state login ---
+    // Fungsi BARU untuk mereset state login
     fun resetLoginState() {
         _loginState.value = LoginState()
+    }
+
+    // Ubah Password
+    fun changePassword(newPassword: String, onComplete: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            val user = auth.currentUser
+            if (user == null) {
+                onComplete(false, "Pengguna tidak login.")
+                return@launch
+            }
+            try {
+                user.updatePassword(newPassword).await()
+                onComplete(true, "Password berhasil diperbarui.")
+            } catch (e: Exception) {
+                onComplete(false, e.message)
+            }
+        }
     }
 }

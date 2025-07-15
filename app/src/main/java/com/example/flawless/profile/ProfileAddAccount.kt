@@ -35,39 +35,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.flawless.AppDestinations
 import com.example.flawless.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileAddAccount( // 1. Mengganti nama fungsi agar konsisten
+fun ProfileAddAccount(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    // 2. Menggunakan Column sebagai layout utama, bukan Box
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // --- Top Bar ---
         CenterAlignedTopAppBar(
-            title = {
-                Text("Add Account", color = Color(0xfffa9a97))
-            },
+            title = { Text("Add Account", color = Color(0xfffa9a97)) },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.Black // Warna ikon hitam
-                    )
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
                 }
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
         )
         Divider(color = Color.Gray.copy(alpha = 0.3f))
 
-        // --- Konten Utama ---
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,45 +67,24 @@ fun ProfileAddAccount( // 1. Mengganti nama fungsi agar konsisten
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. Opsi Akun yang bisa diklik
+            // --- LOGIKA NAVIGASI DITAMBAHKAN DI SINI ---
             AccountOptionItem(
                 icon = painterResource(id = R.drawable.mdi_account_plus_outline),
                 title = "Existing Account",
-                subtitle = "Add an account you already have",
-                onClick = { /* TODO: Logika untuk menambah akun yang sudah ada */ }
+                subtitle = "Log in to an account you already have",
+                onClick = { navController.navigate(AppDestinations.LOGIN_PAGE) }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // --- DAN DI SINI ---
             AccountOptionItem(
                 icon = painterResource(id = R.drawable.mdi_account_circle),
                 title = "New Account",
                 subtitle = "Create a new Flawless account",
-                onClick = { /* TODO: Logika untuk membuat akun baru */ }
+                onClick = { navController.navigate(AppDestinations.SIGN_UP_PAGE) }
             )
         }
-
-        // 4. Mendorong Bottom Bar ke bawah
-        Spacer(modifier = Modifier.weight(1f))
-
-        // --- Bottom Bar ---
-        /*Column {
-            Divider(color = Color.Gray.copy(alpha = 0.2f))
-            BottomAppBar(
-                containerColor = Color.White
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        Icons.Default.Settings,
-                        contentDescription = "Settings Icon",
-                        tint = Color(0xff589591)
-                    )
-                }
-            }
-        }*/
     }
 }
 
