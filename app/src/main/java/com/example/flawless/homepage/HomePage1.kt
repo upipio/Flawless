@@ -1,5 +1,6 @@
 package com.example.flawless.homepage
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -38,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -73,6 +79,10 @@ fun HomePage1(
     postViewModel: PostViewModel = viewModel()
 ) {
     val postState by postViewModel.postFeedState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        postViewModel.fetchPosts()
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -141,24 +151,71 @@ fun HomePage1(
                     color = Color.Red,
                     modifier = Modifier.align(Alignment.Center).padding(16.dp)
                 )
-            } else if (postState.posts.isEmpty()) {
+            } else if (postState.groupedPosts.isEmpty()) {
                 Text(
                     text = "Belum ada postingan. Buat yang pertama!",
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else {
+                // Gunakan LazyColumn untuk daftar bulan
                 LazyColumn(
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    items(postState.posts) { post ->
-                        PostCard(
-                            post = post,
+                    // Iterasi untuk setiap bulan di dalam map
+                    items(postState.groupedPosts.entries.toList()) { (month, posts) ->
+                        MonthlyAlbumItem(
+                            month = month,
+                            posts = posts,
                             navController = navController,
                             postViewModel = postViewModel
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MonthlyAlbumItem(
+    month: String,
+    posts: List<Post>,
+    navController: NavController,
+    postViewModel: PostViewModel
+) {
+    val pagerState = rememberPagerState(pageCount = { posts.size })
+
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
+        Text(
+            text = month,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        // Slider horizontal untuk postingan di bulan tersebut
+        HorizontalPager(
+            state = pagerState,
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            pageSpacing = 16.dp,
+        ) { pageIndex ->
+            PostCard(
+                post = posts[pageIndex],
+                navController = navController,
+                postViewModel = postViewModel
+            )
+        }
+        // Indikator titik
+        Row(
+            Modifier
+                .height(20.dp)
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) Color(0xFFFA9A97) else Color(0xff589591)
+                Box(modifier = Modifier.padding(4.dp).clip(CircleShape).background(color).size(8.dp))
             }
         }
     }
@@ -192,7 +249,9 @@ fun PostCard(
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .background(Color.LightGray)
-                    .clickable { navController.navigate(AppDestinations.DETAIL_POST_PAGE) }
+                    .clickable {
+                        navController.navigate(AppDestinations.createDetailPostRoute(post.id))
+                    }
             )
 
             Row(

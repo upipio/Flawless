@@ -6,20 +6,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -43,9 +39,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,23 +60,26 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.flawless.AppDestinations
 import com.example.flawless.R
-import com.example.flawless.homepage.generateFixedHomePageData
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilePage(
     navController: NavController,
     modifier: Modifier = Modifier,
-    profileViewModel: ProfileViewModel = viewModel() // Tambahkan ViewModel
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    // Ambil state dari ViewModel
     val state by profileViewModel.profileState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        profileViewModel.loadProfileData()
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -89,11 +88,10 @@ fun ProfilePage(
         },
         gesturesEnabled = true,
         scrimColor = Color.Black.copy(alpha = 0.3f)
-    ) {
+    ){
         Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
-                // ... (Kode TopAppBar tidak berubah)
                 Column {
                     TopAppBar(
                         title = {
@@ -120,7 +118,6 @@ fun ProfilePage(
                 }
             },
             bottomBar = {
-                // ... (Kode BottomAppBar tidak berubah)
                 Column {
                     Divider(thickness = 2.dp, color = Color(0xff589591).copy(alpha = 0.6f))
                     BottomAppBar(
@@ -145,27 +142,44 @@ fun ProfilePage(
                 }
             }
         ) { paddingValues ->
-            Column(
+            // Gunakan LazyColumn agar header bisa ikut ter-scroll
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .background(Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (state.isLoading) {
-                    // Tampilkan loading indicator jika sedang memuat
-                    CircularProgressIndicator(modifier = Modifier.padding(top = 64.dp))
-                } else if (state.error != null) {
-                    // Tampilkan pesan error jika terjadi kesalahan
-                    Text(
-                        text = "Error: ${state.error}",
-                        color = Color.Red,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                } else {
-                    // Tampilkan konten jika berhasil
-                    ProfileHeader(userProfile = state.userProfile)
+                // Item 1: Header Profil
+                item {
+                    if (state.isLoading) {
+                        // Tampilkan Box dengan tinggi yang sama dengan header saat loading
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else if (state.error != null) {
+                        Text(
+                            text = "Error: ${state.error}",
+                            color = Color.Red,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                    else {
+                        ProfileHeader(
+                            userProfile = state.userProfile,
+                            favoriteCount = state.favoritePosts.size
+                        )
+                    }
+                }
 
+
+                // Item 2: Ikon Hati
+                item {
                     Icon(
                         painter = painterResource(id = R.drawable.mdi_heart),
                         contentDescription = "Favorite section",
@@ -174,28 +188,42 @@ fun ProfilePage(
                             .padding(vertical = 12.dp)
                             .size(30.dp)
                     )
+                }
 
-                    // Data grid foto masih menggunakan data statis untuk saat ini
-                    val favoritePosts = remember {
-                        generateFixedHomePageData().flatMap { it.posts }.shuffled()
+                // Item 3: Grid Foto Favorit
+                if (state.favoritePosts.isEmpty() && !state.isLoading) {
+                    item {
+                        Text("Belum ada postingan favorit.", modifier = Modifier.padding(16.dp))
                     }
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3),
-                        modifier = Modifier
-                            .heightIn(max = 1000.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(2.dp),
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                        contentPadding = PaddingValues(2.dp)
-                    ) {
-                        items(favoritePosts) { post ->
-                            Image(
-                                painter = painterResource(id = post.imageUrl),
-                                contentDescription = "Favorite post",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.aspectRatio(1f)
-                            )
+                } else {
+                    // Logika untuk membuat grid di dalam LazyColumn
+                    val chunkedPosts = state.favoritePosts.chunked(3)
+                    items(chunkedPosts) { rowItems ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            modifier = Modifier.padding(horizontal = 2.dp)
+                        ) {
+                            rowItems.forEach { post ->
+                                Image(
+                                    painter = rememberAsyncImagePainter(post.imageUrl),
+                                    contentDescription = "Favorite post",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                        .clickable {
+                                            navController.navigate(AppDestinations.createDetailPostRoute(post.id))
+                                        }
+                                )
+                            }
+                            // Tambahkan spacer agar baris terakhir yang tidak penuh tetap rata kiri
+                            if (rowItems.size < 3) {
+                                repeat(3 - rowItems.size) {
+                                    Spacer(modifier = Modifier.weight(1f).aspectRatio(1f))
+                                }
+                            }
                         }
+                        Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
             }
@@ -203,9 +231,8 @@ fun ProfilePage(
     }
 }
 
-// Ubah ProfileHeader untuk menerima data UserProfile
 @Composable
-fun ProfileHeader(userProfile: UserProfile?) {
+fun ProfileHeader(userProfile: UserProfile?, favoriteCount: Int) {
     val gradient = Brush.horizontalGradient(
         colors = listOf(Color(0xff84bdb9), Color(0xfffa9a97))
     )
@@ -231,21 +258,18 @@ fun ProfileHeader(userProfile: UserProfile?) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(verticalArrangement = Arrangement.Center) {
                 Text(
-                    // Tampilkan nama dari UserProfile, atau "Loading..."
                     text = userProfile?.fullname?.uppercase() ?: "LOADING...",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    // Tampilkan email dari UserProfile
-                    text = userProfile?.email ?: "",
+                    text = "Favorites: $favoriteCount",
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    // Tampilkan bio dari UserProfile
                     text = userProfile?.bio ?: "",
                     color = Color.White,
                     style = MaterialTheme.typography.bodySmall,
@@ -256,7 +280,9 @@ fun ProfileHeader(userProfile: UserProfile?) {
     }
 }
 
-// ... (Kode SettingsDrawerContent dan Preview tidak berubah)
+// Hapus fungsi FavoritePostsGrid karena logikanya sudah dipindahkan
+// ke dalam LazyColumn utama
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsDrawerContent(
@@ -307,6 +333,7 @@ fun SettingsDrawerContent(
         }
     }
 }
+
 @Composable
 fun SettingMenuItem(text: String, onClick: () -> Unit) {
     Column {
@@ -322,6 +349,7 @@ fun SettingMenuItem(text: String, onClick: () -> Unit) {
         Divider(color = Color.Gray.copy(alpha = 0.2f))
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ProfilePagePreview() {

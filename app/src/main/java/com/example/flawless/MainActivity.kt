@@ -13,9 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.flawless.homepage.CreatePage
 import com.example.flawless.homepage.DetailPost
 import com.example.flawless.homepage.HomePage1
@@ -54,7 +56,9 @@ object AppDestinations {
     const val HOME_PAGE_1 = "home_page_1"
     const val CREATE_PAGE = "create_page"
     const val PROFILE_PAGE = "profile_page"
-    const val DETAIL_POST_PAGE = "detail_post_page"
+    const val DETAIL_POST_PAGE = "detail_post_page/{postId}"
+    // Fungsi bantuan untuk membuat rute dengan ID
+    fun createDetailPostRoute(postId: String) = "detail_post_page/$postId"
     const val PROFILE_SETTINGS_PAGE = "profile_settings_page"
     const val SECURITY_PAGE = "security_page"
     const val ADD_ACCOUNT_PAGE = "add_account_page"
@@ -113,10 +117,16 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 navController = navController,
                 modifier = Modifier.fillMaxSize())
         }
-        composable(AppDestinations.DETAIL_POST_PAGE) {
+        composable(
+            route = AppDestinations.DETAIL_POST_PAGE,
+            arguments = listOf(navArgument("postId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId") ?: ""
             DetailPost(
+                postId = postId, // Kirim postId ke halaman detail
                 navController = navController,
-                modifier = Modifier.fillMaxSize())
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(AppDestinations.PROFILE_SETTINGS_PAGE) {
             ProfileSetting(
@@ -142,7 +152,7 @@ fun FirstPageWithDelay(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(key1 = true) {
-        delay(3000L)
+        delay(1000L)
         navController.navigate(AppDestinations.WELCOME_PAGE) {
             popUpTo(AppDestinations.FIRST_PAGE) {
                 inclusive = true

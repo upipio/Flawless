@@ -11,9 +11,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
-// Perbarui data class Post
 data class Post(
     val id: String = "",
     val userId: String = "",
@@ -22,13 +24,14 @@ data class Post(
     val title: String = "",
     val description: String = "",
     val timestamp: Long = 0L,
-    // Tambahkan field baru untuk menyimpan daftar ID pengguna yang me-like
     val favoritedBy: List<String> = emptyList()
 )
 
+// State baru untuk menampung data yang sudah dikelompokkan
 data class PostFeedState(
     val isLoading: Boolean = false,
-    val posts: List<Post> = emptyList(),
+    // Kunci adalah nama bulan (e.g., "July 2025"), Value adalah daftar postingan
+    val groupedPosts: Map<String, List<Post>> = emptyMap(),
     val error: String? = null
 )
 
@@ -52,7 +55,14 @@ class PostViewModel : ViewModel() {
                     .get()
                     .await()
                 val posts = snapshot.toObjects(Post::class.java)
-                _postFeedState.update { it.copy(isLoading = false, posts = posts) }
+
+                // Logika untuk mengelompokkan postingan berdasarkan bulan dan tahun
+                val sdf = SimpleDateFormat("MMMM yyyy", Locale.US)
+                val grouped = posts.groupBy { post ->
+                    sdf.format(Date(post.timestamp))
+                }
+
+                _postFeedState.update { it.copy(isLoading = false, groupedPosts = grouped) }
             } catch (e: Exception) {
                 _postFeedState.update { it.copy(isLoading = false, error = e.message) }
             }
@@ -63,7 +73,6 @@ class PostViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val user = auth.currentUser ?: throw Exception("Pengguna tidak login")
-                // Ambil data profil terbaru untuk mendapatkan nama
                 val userProfile = db.collection("users").document(user.uid).get().await()
                 val username = userProfile.getString("fullname") ?: "Pengguna Flawless"
 
@@ -78,6 +87,7 @@ class PostViewModel : ViewModel() {
                 )
 
                 db.collection("posts").document(post.id).set(post).await()
+                fetchPosts() // Refresh data setelah membuat post baru
                 onComplete(true)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -86,39 +96,31 @@ class PostViewModel : ViewModel() {
         }
     }
 
-    // --- FUNGSI BARU UNTUK FAVORIT ---
     fun toggleFavorite(postId: String, isFavorited: Boolean) {
         viewModelScope.launch {
             val userId = auth.currentUser?.uid ?: return@launch
             val postRef = db.collection("posts").document(postId)
-
             try {
-                if (isFavorited) {
-                    // Jika sudah difavoritkan, hapus ID pengguna dari array
-                    postRef.update("favoritedBy", FieldValue.arrayRemove(userId)).await()
+                val updateTask = if (isFavorited) {
+                    postRef.update("favoritedBy", FieldValue.arrayRemove(userId))
                 } else {
-                    // Jika belum, tambahkan ID pengguna ke array
-                    postRef.update("favoritedBy", FieldValue.arrayUnion(userId)).await()
+                    postRef.update("favoritedBy", FieldValue.arrayUnion(userId))
                 }
-                // Ambil ulang data untuk memperbarui UI
-                fetchPosts()
+                updateTask.await()
+                fetchPosts() // Refresh data untuk update UI
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Handle error jika perlu
             }
         }
     }
 
-    // --- FUNGSI BARU UNTUK HAPUS ---
     fun deletePost(postId: String) {
         viewModelScope.launch {
             try {
                 db.collection("posts").document(postId).delete().await()
-                // Ambil ulang data untuk memperbarui UI
-                fetchPosts()
+                fetchPosts() // Refresh data setelah menghapus
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Handle error jika perlu
             }
         }
     }
