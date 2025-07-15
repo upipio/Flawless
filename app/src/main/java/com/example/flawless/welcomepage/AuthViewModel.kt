@@ -38,14 +38,19 @@ class AuthViewModel : ViewModel() {
     private val _loginState = MutableStateFlow(LoginState())
     val loginState = _loginState.asStateFlow()
 
-
+    //fungsi ini berada di dalam file: app/src/main/java/com/example/flawless/welcomepage/AuthViewModel.kt
     fun createUser(email: String, password: String, fullname: String) {
+    //input email dan password diambil dari parameter
+    //yang dipanggil dari UI (SignUpPage.kt)
         viewModelScope.launch {
+            //set state menjadi loading
             _signUpState.update { it.copy(isLoading = true, error = null) }
             try {
+                //memanggil metode createUserWithEmailAndPassword dari Firebase
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                 val user = authResult.user
 
+                //jika berhasil, simpan data nama ke Firestore
                 user?.uid?.let { userId ->
                     val userProfile = hashMapOf(
                         "uid" to userId,
@@ -55,8 +60,13 @@ class AuthViewModel : ViewModel() {
                     )
                     db.collection("users").document(userId).set(userProfile).await()
                 }
+                //menangani jika registrasi berhasil
                 _signUpState.update { it.copy(isLoading = false, isSuccess = true) }
             } catch (e: Exception) {
+                //menangani jika terjadi error
+                //pengecekan spesifik untuk AuthUser Exception di sini
+                //Firebase Auth sudah memberikan pesan error yang jelas scara otomatis
+                //seperti "The email address is already in use by another account" yang ada didalam e.message
                 _signUpState.update { it.copy(isLoading = false, error = e.message) }
             }
         }

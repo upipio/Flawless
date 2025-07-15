@@ -71,10 +71,12 @@ class PostViewModel : ViewModel() {
     fun createPost(imageUrl: String, title: String, description: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
+                //mengambil informasi pengguna yang sedang login saat ini
                 val user = auth.currentUser ?: throw Exception("Pengguna tidak login")
                 val userProfile = db.collection("users").document(user.uid).get().await()
                 val username = userProfile.getString("fullname") ?: "Pengguna Flawless"
 
+                //membuat objek Post dengan semua data yang diperlukan
                 val post = Post(
                     id = UUID.randomUUID().toString(),
                     userId = user.uid,
@@ -85,8 +87,9 @@ class PostViewModel : ViewModel() {
                     timestamp = System.currentTimeMillis()
                 )
 
+                //menyimpan 'post' sebagai dokumen baru di dalam koleksi posts
                 db.collection("posts").document(post.id).set(post).await()
-                fetchPosts() // Refresh data setelah membuat post baru
+                fetchPosts() //refresh data setelah upload post baru
                 onComplete(true)
             } catch (e: Exception) {
                 e.printStackTrace()
